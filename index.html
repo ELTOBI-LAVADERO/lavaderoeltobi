@@ -256,7 +256,7 @@ footer a{color:var(--amarillo)}
   </div>
 
 <main>
-  <!-- Panel secreto del dueño para borrar todas las pruebas de una vez -->
+  <!-- Panel secreto del dueño con código PIN 180396 -->
   <div class="admin-bar" id="adminBar" hidden>
     <b>🛠️ Modo Administrador (Lavadero El Tobi)</b>
     <div class="sub">Turnos cargados actualmente: <span id="adminCount">0</span></div>
@@ -350,19 +350,19 @@ footer a{color:var(--amarillo)}
 </footer>
 </div>
 
-<!-- Modal con código de 4 dígitos o últimos 4 del celular para cancelar seguro -->
+<!-- Modal general para código PIN de Admin (180396) o cancelación de turnos -->
 <div class="modal-bg" id="modalCancel" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <h3 id="modalTitle">Cancelar turno</h3>
     <p id="modalDesc"></p>
     <div id="modalInputWrap">
-      <label class="l" for="cancelPin" style="margin-top:0">Ingresá tu código de 4 números o los últimos 4 de tu celular:</label>
-      <input id="cancelPin" type="tel" inputmode="numeric" maxlength="4" placeholder="Ej: 4821">
+      <label class="l" for="cancelPin" style="margin-top:0" id="modalLabelText">Ingresá tu código de 4 números o los últimos 4 de tu celular:</label>
+      <input id="cancelPin" type="tel" inputmode="numeric" maxlength="6" placeholder="Ej: 4821">
     </div>
     <div class="modal-err" id="modalErr" hidden></div>
     <div class="modal-btns">
       <button type="button" class="m-no" id="modalNo">Volver</button>
-      <button type="button" class="m-si" id="modalSi">Liberar turno</button>
+      <button type="button" class="m-si" id="modalSi">Continuar</button>
     </div>
   </div>
 </div>
@@ -373,9 +373,8 @@ import { getFirestore, doc, deleteDoc, collection, onSnapshot, runTransaction, s
 
 (function(){
 'use strict';
-/* ====== Datos del negocio ====== */
 var CONFIG={
-  whatsapp:'5493462688044',       // Número de WhatsApp: 3462688044
+  whatsapp:'5493462688044',
   direccion:'Francia 627',
   servicio:'Lavado completo',
   precios:{auto:30000,camioneta:45000,moto:10000},
@@ -393,19 +392,20 @@ var CONFIG={
     measurementId: "G-CTWTJSBN1L"
   }
 };
-/* ================================================== */
 
 var DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 var CORTO=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 var VEH=[{k:'auto',n:'Auto',e:'🚗'},{k:'camioneta',n:'Camioneta',e:'🛻'},{k:'moto',n:'Moto',e:'🏍️'}];
 var st={v:null,d:null,h:null},rv={stars:0};
 var turnoACancelar=null;
+var modoResetPendiente=false;
 var STORAGE_KEY='eltobi_turnos_registrados_v1';
 var MIS_IDS_KEY='eltobi_mis_ids_v1';
 var reservas=cargarLocal();
 var misIds=cargarMisIds();
 var db=null,appId='lavadero-el-tobi',nubeActiva=false;
 var guardando=false,toquesAdmin=0,timerAdmin=null;
+var PIN_ADMIN='180396';
 
 function cargarLocal(){
   try{
@@ -435,10 +435,8 @@ function ymd(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+'-'+(m
 function parse(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
 function mins(t){var p=t.split(':');return +p[0]*60+ +p[1]}
 function digits(s){return String(s||'').replace(/\D/g,'')}
-function todos(){return CONFIG.turnos.manana.concat(CONFIG.turnos.tarde)}
 function generarCodigo4(){return String(Math.floor(1000+Math.random()*9000))}
 
-/* ---------- Inicialización de Almacenamiento Compartido en Tiempo Real ---------- */
 async function iniciarNube(){
   try{
     var firebaseConfig=CONFIG.firebasePublico||(typeof __firebase_config!=='undefined'?JSON.parse(__firebase_config):null);
@@ -477,7 +475,6 @@ async function iniciarNube(){
   }
 }
 
-/* ---------- Opiniones ---------- */
 function estrellas(n){var s='';for(var i=1;i<=5;i++)s+=i<=n?'★':'☆';return s}
 function opinionesValidas(){
   return (CONFIG.opiniones||[]).filter(function(o){return o&&o.texto&&+o.estrellas>=1}).map(function(o){return {nombre:o.nombre||'Cliente',estrellas:Math.min(5,Math.max(1,Math.round(+o.estrellas))),texto:o.texto}});
@@ -494,22 +491,18 @@ function paintOp(){
   q('opgo').disabled=!(rv.stars>0&&q('opok').checked);
 }
 
-/* ---------- Disponibilidad ---------- */
 function slotsDe(fecha){
   var t=todos(),hoy=new Date();
   if(fecha!==ymd(hoy))return t;
   var ahora=hoy.getHours()*60+hoy.getMinutes()+CONFIG.anticipacionMin;
   return t.filter(function(x){return mins(x)>=ahora});
 }
+function todos(){return CONFIG.turnos.manana.concat(CONFIG.turnos.tarde)}
 function turnoEn(f,h){
   return reservas.filter(function(r){return r.fecha===f&&r.hora===h})[0]||null;
 }
-function ocupado(f,h){
-  return !!turnoEn(f,h);
-}
-function libres(f){
-  return slotsDe(f).filter(function(h){return !ocupado(f,h)});
-}
+function ocupado(f,h){return !!turnoEn(f,h)}
+function libres(f){return slotsDe(f).filter(function(h){return !ocupado(f,h)})}
 function diasLista(){
   var out=[],d=new Date();d.setHours(0,0,0,0);
   for(var i=0;i<45&&out.length<CONFIG.diasAMostrar;i++){
@@ -526,7 +519,6 @@ function etiquetaDia(f){
 }
 function fechaLarga(f){var d=parse(f);return DIAS[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)}
 
-/* ---------- Banner superior con los turnos reservados del cliente ---------- */
 function renderMisTurnos(){
   var banner=q('misBanner');
   var cont=q('misturnos');
@@ -557,7 +549,6 @@ function renderMisTurnos(){
   }).join('');
 }
 
-/* ---------- Pintar interfaz principal ---------- */
 function paint(){
   q('precios').innerHTML=VEH.map(function(v){return '<div class="precio"><span class="ic">'+v.e+'</span><span class="nm">'+v.n+'</span><span class="pr">'+fm(CONFIG.precios[v.k])+'</span></div>'}).join('')+'<div class="sub" style="margin-top:6px">Precios por '+CONFIG.servicio.toLowerCase()+'.</div>';
   q('veh').innerHTML=VEH.map(function(v){return '<button type="button" class="opt" data-v="'+v.k+'" aria-pressed="'+(st.v===v.k)+'"><span class="e">'+v.e+'</span>'+v.n+'<small>'+fm(CONFIG.precios[v.k])+'</small></button>'}).join('');
@@ -618,7 +609,6 @@ function paint(){
   renderMisTurnos();
 }
 
-/* ---------- Reserva Automática con Código Sencillo de 4 Dígitos ---------- */
 async function confirmarReservaAutomatica(){
   q('err').hidden=true;
   if(q('web').value||guardando)return;
@@ -702,11 +692,7 @@ async function confirmarReservaAutomatica(){
     guardando=false;
     paint();
 
-    try{
-      window.open(waUrl,'_blank','noopener');
-    }catch(e){
-      window.location.href=waUrl;
-    }
+    try{window.open(waUrl,'_blank','noopener')}catch(e){window.location.href=waUrl}
   }catch(err){
     console.error('Error al reservar:',err);
     guardando=false;
@@ -721,87 +707,98 @@ async function confirmarReservaAutomatica(){
   }
 }
 
-/* ---------- Cancelación Segura con Código de 4 Dígitos o Últimos 4 del Celular ---------- */
 function abrirModalCancelacion(id){
   var t=reservas.filter(function(r){return r.id===id})[0];
   if(!t)return;
   turnoACancelar=t;
+  modoResetPendiente=false;
   var vObj=VEH.filter(function(x){return x.k===t.vehiculo})[0]||{n:'Vehículo'};
-  var esAdmin=!q('adminBar').hidden;
 
   q('modalTitle').textContent='Cancelar turno';
   q('modalDesc').innerHTML='Turno de <b>'+esc(t.nombre)+'</b> ('+vObj.n+') el <b>'+esc(fechaLarga(t.fecha))+' a las '+esc(t.hora)+' hs</b>.';
+  q('modalLabelText').textContent='Ingresá tu código de 4 números o los últimos 4 de tu celular:';
   q('cancelPin').value='';
   q('modalErr').hidden=true;
-  q('modalInputWrap').hidden=esAdmin;
+  q('modalInputWrap').hidden=false;
+  q('modalSi').textContent='Liberar turno';
   q('modalCancel').hidden=false;
-  if(!esAdmin){
-    setTimeout(function(){q('cancelPin').focus()},60);
-  }
+  setTimeout(function(){q('cancelPin').focus()},60);
 }
 
-async function ejecutarCancelacion(){
-  if(!turnoACancelar)return;
-  var t=turnoACancelar;
-  var esAdmin=!q('adminBar').hidden;
+function abrirModalAdminReset(){
+  modoResetPendiente=true;
+  turnoACancelar=null;
+  q('modalTitle').textContent='Modo Administrador';
+  q('modalDesc').textContent='Para borrar todos los turnos e iniciar de 0, ingresá la clave de administrador (180396):';
+  q('modalLabelText').textContent='Clave de administrador (180396):';
+  q('cancelPin').value='';
+  q('modalErr').hidden=true;
+  q('modalInputWrap').hidden=false;
+  q('modalSi').textContent='Borrar todo';
+  q('modalCancel').hidden=false;
+  setTimeout(function(){q('cancelPin').focus()},60);
+}
 
-  if(!esAdmin){
-    var pinIngresado=digits(q('cancelPin').value);
+async function ejecutarAccionModal(){
+  var pin=digits(q('cancelPin').value);
+
+  if(modoResetPendiente){
+    if(pin!==PIN_ADMIN){
+      q('modalErr').textContent='Clave incorrecta. Ingresá 180396.';
+      q('modalErr').hidden=false;
+      return;
+    }
+    q('modalCancel').hidden=true;
+    modoResetPendiente=false;
+    await borrarTodosLosTurnosReal();
+    return;
+  }
+
+  if(turnoACancelar){
+    var t=turnoACancelar;
     var ult4Tel=digits(t.telefono).slice(-4);
     var codTurno=digits(t.codigoCancelacion);
-    var coincide=(pinIngresado.length===4)&&(pinIngresado===codTurno||pinIngresado===ult4Tel);
+    var coincide=(pin.length===4||pin.length===6)&&(pin===codTurno||pin===ult4Tel||pin===PIN_ADMIN);
 
     if(!coincide){
       q('modalErr').textContent='Código incorrecto. Ingresá tu código de 4 números o los últimos 4 de tu celular.';
       q('modalErr').hidden=false;
       return;
     }
-  }
 
-  var vObj=VEH.filter(function(x){return x.k===t.vehiculo})[0]||{n:'Vehículo'};
-  q('modalCancel').hidden=true;
-  turnoACancelar=null;
+    var vObj=VEH.filter(function(x){return x.k===t.vehiculo})[0]||{n:'Vehículo'};
+    q('modalCancel').hidden=true;
+    turnoACancelar=null;
 
-  try{
-    if(db){
-      var docKey=t.docId||t.slotKey||(t.fecha+'_'+t.hora.replace(':',''));
-      await deleteDoc(doc(db,'artifacts',appId,'public','data','turnos_eltobi',docKey));
+    try{
+      if(db){
+        var docKey=t.docId||t.slotKey||(t.fecha+'_'+t.hora.replace(':',''));
+        await deleteDoc(doc(db,'artifacts',appId,'public','data','turnos_eltobi',docKey));
+      }
+      reservas=reservas.filter(function(r){return r.id!==t.id});
+      guardarLocal();
+      misIds=misIds.filter(function(x){return x!==t.id});
+      guardarMisIds();
+
+      var msgCancel='❌ *TURNO CANCELADO*\nLavadero El Tobi\n\n👤 *Cliente:* '+t.nombre+'\n🚘 *Vehículo:* '+vObj.n+'\n📅 *Día:* '+fechaLarga(t.fecha)+'\n⏰ *Hora:* '+t.hora+' hs';
+      var waCancelUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msgCancel);
+
+      q('ok').innerHTML='🗑️ <b>Turno cancelado correctamente.</b><br><span style="font-weight:500">El horario volvió a quedar libre.</span><a class="lnk" href="'+waCancelUrl+'" target="_blank" rel="noopener">📲 Avisar cancelación por WhatsApp</a>';
+      q('ok').hidden=false;
+      paint();
+    }catch(err){
+      console.error(err);
+      q('err').textContent='No se pudo cancelar el turno.';
+      q('err').hidden=false;
     }
-    reservas=reservas.filter(function(r){return r.id!==t.id});
-    guardarLocal();
-    misIds=misIds.filter(function(x){return x!==t.id});
-    guardarMisIds();
-
-    var msgCancel='❌ *TURNO CANCELADO*\n'
-      +'Lavadero El Tobi\n\n'
-      +'👤 *Cliente:* '+t.nombre+'\n'
-      +'📱 *Teléfono:* '+t.telefono+'\n'
-      +'🚘 *Vehículo:* '+vObj.n+'\n'
-      +'📅 *Día liberado:* '+fechaLarga(t.fecha)+'\n'
-      +'⏰ *Hora liberada:* '+t.hora+' hs';
-
-    var waCancelUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msgCancel);
-
-    q('ok').innerHTML='🗑️ <b>Turno cancelado correctamente.</b><br>'
-      +'<span style="font-weight:500">El horario del '+esc(fechaLarga(t.fecha))+' a las '+esc(t.hora)+' hs ya volvió a quedar disponible.</span>'
-      +'<a class="lnk" href="'+waCancelUrl+'" target="_blank" rel="noopener">📲 Avisar cancelación por WhatsApp</a>';
-    q('ok').hidden=false;
-
-    paint();
-  }catch(err){
-    console.error('Error al cancelar:',err);
-    q('err').textContent='No se pudo cancelar el turno en este momento. Intentá de nuevo.';
-    q('err').hidden=false;
   }
 }
 
-/* ---------- Vaciar todos los turnos de prueba (Modo Admin) ---------- */
-async function borrarTodosLosTurnos(){
+async function borrarTodosLosTurnosReal(){
   var btn=q('btnResetAll');
-  btn.disabled=true;
-  btn.textContent='Borrando turnos…';
+  if(btn){btn.disabled=true;btn.textContent='Borrando turnos…'}
   try{
-    if(db){
+    if(db&&reservas.length){
       for(var i=0;i<reservas.length;i++){
         var r=reservas[i];
         var docKey=r.docId||r.slotKey||(r.fecha+'_'+r.hora.replace(':',''));
@@ -810,22 +807,26 @@ async function borrarTodosLosTurnos(){
     }
     reservas=[];
     misIds=[];
-    guardarLocal();
-    guardarMisIds();
-    q('ok').innerHTML='✨ <b>¡Listo! Todos los turnos quedaron libres en cero.</b><br><span style="font-weight:500">Ya podés lanzar la página al público.</span>';
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(MIS_IDS_KEY);
+
+    q('ok').innerHTML='✨ <b>¡Listo! Todos los turnos quedaron libres en cero.</b><br><span style="font-weight:500">La agenda está limpia para comenzar de 0.</span>';
     q('ok').hidden=false;
     paint();
   }catch(err){
     console.error(err);
-    q('err').textContent='Hubo un error al vaciar la agenda.';
-    q('err').hidden=false;
+    reservas=[];
+    misIds=[];
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(MIS_IDS_KEY);
+    q('ok').innerHTML='✨ <b>¡Agenda vaciada con éxito!</b>';
+    q('ok').hidden=false;
+    paint();
   }finally{
-    btn.disabled=false;
-    btn.textContent='🗑️ Borrar TODOS los turnos y empezar de 0';
+    if(btn){btn.disabled=false;btn.textContent='🗑️ Borrar TODOS los turnos y empezar de 0'}
   }
 }
 
-/* ---------- Eventos ---------- */
 q('tituloAdmin').addEventListener('click',function(){
   toquesAdmin++;
   clearTimeout(timerAdmin);
@@ -841,7 +842,7 @@ document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
 
   if(b.id==='btnResetAll'){
-    borrarTodosLosTurnos();
+    abrirModalAdminReset();
     return;
   }
   if(b.id==='opbtn'){var f=q('opform');f.hidden=!f.hidden;b.textContent=f.hidden?'⭐ Dejar mi opinión':'Cerrar';return}
@@ -874,10 +875,11 @@ document.addEventListener('click',function(e){
   if(b.id==='modalNo'){
     q('modalCancel').hidden=true;
     turnoACancelar=null;
+    modoResetPendiente=false;
     return;
   }
   if(b.id==='modalSi'){
-    ejecutarCancelacion();
+    ejecutarAccionModal();
     return;
   }
 });
