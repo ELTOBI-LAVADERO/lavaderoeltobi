@@ -260,6 +260,7 @@ footer a{color:var(--amarillo)}
   <div class="admin-bar" id="adminBar" hidden>
     <b>🛠️ Modo Administrador (Lavadero El Tobi)</b>
     <div class="sub">Turnos cargados actualmente: <span id="adminCount">0</span></div>
+    <button type="button" id="btnGenerarQR" style="background:#0284c7;margin-top:8px">🖨️ Generar y Descargar Código QR para Folletos</button>
     <button type="button" id="btnResetAll">🗑️ Borrar TODOS los turnos y empezar de 0</button>
   </div>
 
@@ -359,6 +360,11 @@ footer a{color:var(--amarillo)}
       <label class="l" for="cancelPin" style="margin-top:0" id="modalLabelText">Ingresá tu código de 4 números o los últimos 4 de tu celular:</label>
       <input id="cancelPin" type="tel" inputmode="numeric" maxlength="6" placeholder="Ej: 4821">
     </div>
+    <div id="qrModalContent" hidden style="text-align:center;margin:12px 0">
+      <div id="qrImgBox" style="background:#fff;padding:12px;border-radius:12px;display:inline-block;box-shadow:0 4px 12px rgba(0,0,0,0.3)"></div>
+      <p style="font-size:13px;color:#fff;margin-top:10px">Escaneá este código o descargalo para imprimir en tus folletos.</p>
+      <a id="downloadQrBtn" class="lnk" style="background:#0284c7;margin-top:10px;text-decoration:none" download="qr_lavadero_el_tobi.png">📥 Descargar imagen QR</a>
+    </div>
     <div class="modal-err" id="modalErr" hidden></div>
     <div class="modal-btns">
       <button type="button" class="m-no" id="modalNo">Volver</button>
@@ -374,7 +380,7 @@ import { getFirestore, doc, deleteDoc, collection, onSnapshot, runTransaction, s
 (function(){
 'use strict';
 var CONFIG={
-  whatsapp:'5493462688044',
+  whatsapp:'5493462569225',
   direccion:'Francia 627',
   servicio:'Lavado completo',
   precios:{auto:30000,camioneta:45000,moto:10000},
@@ -734,9 +740,32 @@ function abrirModalAdminReset(){
   q('cancelPin').value='';
   q('modalErr').hidden=true;
   q('modalInputWrap').hidden=false;
+  q('qrModalContent').hidden=true;
   q('modalSi').textContent='Borrar todo';
   q('modalCancel').hidden=false;
   setTimeout(function(){q('cancelPin').focus()},60);
+}
+
+function abrirModalQR(){
+  modoResetPendiente=false;
+  turnoACancelar=null;
+  q('modalTitle').textContent='🖨️ Código QR para Folletos';
+  q('modalDesc').textContent='Este es el código QR oficial de tu página web de Lavadero El Tobi:';
+  q('modalInputWrap').hidden=true;
+  q('modalErr').hidden=true;
+  q('modalSi').hidden=true;
+  q('modalNo').textContent='Cerrar';
+
+  var paginaUrl=window.location.href.split('#')[0];
+  var qrApiUrl='https://api.qrserver.com/v1/create-qr-code/?size=260x260&data='+encodeURIComponent(paginaUrl);
+  
+  q('qrImgBox').innerHTML='<img src="'+qrApiUrl+'" alt="QR Lavadero El Tobi" style="display:block;width:220px;height:220px;margin:0 auto">';
+  
+  var dlBtn=q('downloadQrBtn');
+  dlBtn.href=qrApiUrl;
+  dlBtn.target='_blank';
+  q('qrModalContent').hidden=false;
+  q('modalCancel').hidden=false;
 }
 
 async function ejecutarAccionModal(){
@@ -748,82 +777,90 @@ async function ejecutarAccionModal(){
       q('modalErr').hidden=false;
       return;
     }
-    q('modalCancel').hidden=true;
-    modoResetPendiente=false;
-    await borrarTodosLosTurnosReal();
-    return;
-  }
-
-  if(turnoACancelar){
-    var t=turnoACancelar;
-    var ult4Tel=digits(t.telefono).slice(-4);
-    var codTurno=digits(t.codigoCancelacion);
-    var coincide=(pin.length===4||pin.length===6)&&(pin===codTurno||pin===ult4Tel||pin===PIN_ADMIN);
-
-    if(!coincide){
-      q('modalErr').textContent='Código incorrecto. Ingresá tu código de 4 números o los últimos 4 de tu celular.';
-      q('modalErr').hidden=false;
-      return;
-    }
-
-    var vObj=VEH.filter(function(x){return x.k===t.vehiculo})[0]||{n:'Vehículo'};
-    q('modalCancel').hidden=true;
-    turnoACancelar=null;
-
+    q('modalSi').disabled=true;
+    q('modalSi').textContent='Borrando todo…';
     try{
       if(db){
-        var docKey=t.docId||t.slotKey||(t.fecha+'_'+t.hora.replace(':',''));
-        await deleteDoc(doc(db,'artifacts',appId,'public','data','turnos_eltobi',docKey));
+        var promesas=reservas.map(function(r){
+          var docId=r.docId||r.slotKey;
+          return docId?deleteDoc(doc(db,'artifacts',appId,'public','data','turnos_eltobi',docId)):Promise.resolve();
+        });
+        await Promise.all(promesas);
       }
-      reservas=reservas.filter(function(r){return r.id!==t.id});
-      guardarLocal();
-      misIds=misIds.filter(function(x){return x!==t.id});
-      guardarMisIds();
-
-      var msgCancel='❌ *TURNO CANCELADO*\nLavadero El Tobi\n\n👤 *Cliente:* '+t.nombre+'\n🚘 *Vehículo:* '+vObj.n+'\n📅 *Día:* '+fechaLarga(t.fecha)+'\n⏰ *Hora:* '+t.hora+' hs';
-      var waCancelUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msgCancel);
-
-      q('ok').innerHTML='🗑️ <b>Turno cancelado correctamente.</b><br><span style="font-weight:500">El horario volvió a quedar libre.</span><a class="lnk" href="'+waCancelUrl+'" target="_blank" rel="noopener">📲 Avisar cancelación por WhatsApp</a>';
+      reservas=[];
+      misIds=[];
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(MIS_IDS_KEY);
+      q('modalCancel').hidden=true;
+      modoResetPendiente=false;
+      q('ok').innerHTML='✅ <b>¡Listo! Se borraron todos los turnos.</b><br><span style="font-weight:500">La agenda quedó completamente libre en 0 para empezar.</span>';
       q('ok').hidden=false;
       paint();
     }catch(err){
-      console.error(err);
-      q('err').textContent='No se pudo cancelar el turno.';
-      q('err').hidden=false;
+      console.error('Error al resetear todo:',err);
+      q('modalErr').textContent='Error al borrar turnos en la nube.';
+      q('modalErr').hidden=false;
+    }finally{
+      q('modalSi').disabled=false;
+      q('modalSi').textContent='Borrar todo';
+    }
+    return;
+  }
+
+  if(!turnoACancelar)return;
+  var esAdmin=!q('adminBar').hidden;
+  var telUlt4=digits(turnoACancelar.telefono).slice(-4);
+  var codGuardado=String(turnoACancelar.codigoCancelacion||'');
+
+  if(!esAdmin){
+    var coincideCodigo=codGuardado&&pin===codGuardado;
+    var coincideTel=telUlt4.length===4&&pin===telUlt4;
+    if(!coincideCodigo&&!coincideTel){
+      q('modalErr').textContent='El código ingresado no coincide con este turno.';
+      q('modalErr').hidden=false;
+      return;
     }
   }
-}
 
-async function borrarTodosLosTurnosReal(){
-  var btn=q('btnResetAll');
-  if(btn){btn.disabled=true;btn.textContent='Borrando turnos…'}
+  var t=turnoACancelar;
+  q('modalSi').disabled=true;
+  q('modalSi').textContent='Liberando…';
+
   try{
-    if(db&&reservas.length){
-      for(var i=0;i<reservas.length;i++){
-        var r=reservas[i];
-        var docKey=r.docId||r.slotKey||(r.fecha+'_'+r.hora.replace(':',''));
-        await deleteDoc(doc(db,'artifacts',appId,'public','data','turnos_eltobi',docKey));
-      }
+    if(db){
+      var docId=t.docId||t.slotKey||(t.fecha+'_'+t.hora.replace(':',''));
+      await deleteDoc(doc(db,'artifacts',appId,'public','data','turnos_eltobi',docId));
     }
-    reservas=[];
-    misIds=[];
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(MIS_IDS_KEY);
+    reservas=reservas.filter(function(r){return r.id!==t.id&&!(r.fecha===t.fecha&&r.hora===t.hora)});
+    misIds=misIds.filter(function(id){return id!==t.id});
+    guardarLocal();
+    guardarMisIds();
 
-    q('ok').innerHTML='✨ <b>¡Listo! Todos los turnos quedaron libres en cero.</b><br><span style="font-weight:500">La agenda está limpia para comenzar de 0.</span>';
+    q('modalCancel').hidden=true;
+    turnoACancelar=null;
+
+    var vObj=VEH.filter(function(x){return x.k===t.vehiculo})[0]||{n:'Vehículo'};
+    var textoCancel='❌ *TURNO CANCELADO*\n'
+      +'Lavadero El Tobi\n\n'
+      +'👤 *Cliente:* '+t.nombre+'\n'
+      +'🚘 *Vehículo:* '+vObj.n+(t.patente?' ('+t.patente+')':'')+'\n'
+      +'📅 *Día:* '+fechaLarga(t.fecha)+'\n'
+      +'⏰ *Hora:* '+t.hora+' hs\n\n'
+      +'_El horario quedó libre nuevamente en la página._';
+    var waCancelUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(textoCancel);
+
+    q('ok').innerHTML='🗑️ <b>Turno cancelado y horario liberado.</b><br>'
+      +'<span style="font-weight:500">El horario de las '+esc(t.hora)+' hs del '+esc(fechaLarga(t.fecha))+' ya vuelve a estar disponible.</span>'
+      +'<a class="lnk" href="'+waCancelUrl+'" target="_blank" rel="noopener">📲 Avisar cancelación por WhatsApp</a>';
     q('ok').hidden=false;
     paint();
   }catch(err){
-    console.error(err);
-    reservas=[];
-    misIds=[];
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(MIS_IDS_KEY);
-    q('ok').innerHTML='✨ <b>¡Agenda vaciada con éxito!</b>';
-    q('ok').hidden=false;
-    paint();
+    console.error('Error al cancelar:',err);
+    q('modalErr').textContent='No se pudo cancelar en este momento. Reintentá.';
+    q('modalErr').hidden=false;
   }finally{
-    if(btn){btn.disabled=false;btn.textContent='🗑️ Borrar TODOS los turnos y empezar de 0'}
+    q('modalSi').disabled=false;
+    q('modalSi').textContent='Liberar turno';
   }
 }
 
@@ -841,6 +878,10 @@ q('tituloAdmin').addEventListener('click',function(){
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
 
+  if(b.id==='btnGenerarQR'){
+    abrirModalQR();
+    return;
+  }
   if(b.id==='btnResetAll'){
     abrirModalAdminReset();
     return;
@@ -848,34 +889,38 @@ document.addEventListener('click',function(e){
   if(b.id==='opbtn'){var f=q('opform');f.hidden=!f.hidden;b.textContent=f.hidden?'⭐ Dejar mi opinión':'Cerrar';return}
   if(b.dataset.star){rv.stars=+b.dataset.star;paintOp();return}
   if(b.id==='opgo'){
-    if(b.disabled)return;
-    var nom=q('opnom').value.trim()||'Cliente',com=q('opcom').value.trim(),est='';
-    for(var i=0;i<rv.stars;i++)est+='⭐';
-    var msg='¡Hola! Quiero dejar mi opinión sobre Lavadero El Tobi:\n\n'+est+' ('+rv.stars+'/5)\n'+(com?'Comentario: '+com+'\n':'')+'Nombre: '+nom+'\n\nAutorizo a publicar mi opinión en la página.';
-    window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msg),'_blank','noopener');
+    if(!(rv.stars>0&&q('opok').checked))return;
+    var nom=q('opnom').value.trim(),com=q('opcom').value.trim();
+    var txt='⭐ *Nueva opinión para Lavadero El Tobi*\n'
+      +'Calificación: '+estrellas(rv.stars)+' ('+rv.stars+'/5)\n'
+      +(nom?'Nombre: '+nom+'\n':'')
+      +(com?'Comentario: '+com+'\n':'')
+      +'Autoriza publicar: Sí';
+    var url='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(txt);
+    try{window.open(url,'_blank','noopener')}catch(err){window.location.href=url}
     return;
   }
-  if(b.dataset.v){st.v=b.dataset.v;paint();return}
-  if(b.dataset.d){st.d=b.dataset.d;st.h=null;q('ok').hidden=true;paint();return}
-  if(b.dataset.h){st.h=b.dataset.h;paint();return}
-  if(b.dataset.occH){
-    var tOcc=turnoEn(st.d,b.dataset.occH);
-    if(tOcc)abrirModalCancelacion(tOcc.id);
-    return;
-  }
-  if(b.id==='go'){
-    if(b.disabled)return;
-    confirmarReservaAutomatica();
+  if(b.dataset.v){st.v=b.dataset.v;q('ok').hidden=true;paint();return}
+  if(b.dataset.d&&!b.disabled){st.d=b.dataset.d;st.h=null;q('ok').hidden=true;paint();return}
+  if(b.dataset.h){st.h=b.dataset.h;q('ok').hidden=true;paint();return}
+  if(b.dataset.occH&&st.d){
+    var turnoOcupado=turnoEn(st.d,b.dataset.occH);
+    if(turnoOcupado)abrirModalCancelacion(turnoOcupado.id);
     return;
   }
   if(b.dataset.cancelId){
     abrirModalCancelacion(b.dataset.cancelId);
     return;
   }
+  if(b.id==='go'){
+    confirmarReservaAutomatica();
+    return;
+  }
   if(b.id==='modalNo'){
     q('modalCancel').hidden=true;
     turnoACancelar=null;
     modoResetPendiente=false;
+    q('modalSi').hidden=false;
     return;
   }
   if(b.id==='modalSi'){
@@ -886,14 +931,16 @@ document.addEventListener('click',function(e){
 
 q('nom').addEventListener('input',paint);
 q('tel').addEventListener('input',paint);
+q('pat').addEventListener('input',paint);
 q('opok').addEventListener('change',paintOp);
-q('dir').textContent=CONFIG.direccion;
-q('wa').href='https://wa.me/'+CONFIG.whatsapp;
+q('cancelPin').addEventListener('keydown',function(e){if(e.key==='Enter')ejecutarAccionModal()});
 
-paint();
+q('dir').textContent=CONFIG.direccion;
+q('wa').href='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent('Hola Lavadero El Tobi, tengo una consulta.');
+
 paintOp();
+paint();
 iniciarNube();
-setInterval(paint,60000);
 })();
 </script>
 </body>
