@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lavadero El Tobi · Reservá tu turno</title>
+<meta name="description" content="Reservá tu turno de lavado automático para tu auto, camioneta o moto en Lavadero El Tobi, Francia 627.">
+<meta property="og:title" content="Lavadero El Tobi · Reservá tu turno">
+<meta property="og:description" content="Mirá los horarios libres, elegí el tuyo y reservá al instante. El 5° lavado es gratis.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b5ab8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,700;1,800;1,900&display=swap">
+<style>
+:root{
+  --azul:#0b5ab8; --azul-osc:#073d82; --azul-prof:#05295a; --card:#0f6bd0; --celeste:#00b4ff;
+  --amarillo:#f9e11b; --amarillo-txt:#3a2f00; --rojo:#e8262b; --verde:#25d366;
+  --blanco:#fff; --txt:#eaf4ff; --txt-suave:#cfe6ff;
+  --f-display:"Montserrat",system-ui,sans-serif; --f-body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--azul-osc)}
+body{margin:0;min-height:100vh;background:var(--azul-osc);background-image:linear-gradient(180deg,var(--azul) 0%,var(--azul-osc) 100%);background-attachment:fixed;color:var(--txt);font-family:var(--f-body);font-size:16px;line-height:1.4;
+  padding:0 max(16px,env(safe-area-inset-left)) calc(36px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+.wrap{max-width:560px;margin:0 auto;position:relative}
+
+/* ===== Animación Superior Izquierda con Fondo Transparente ===== */
+.header-top{position:relative;padding-top:18px;display:flex;flex-direction:column;align-items:center}
+.mascot-box{
+  position:absolute;
+  top:6px;
+  left:-6px;
+  width:118px;
+  height:118px;
+  background:transparent;
+  pointer-events:none;
+  z-index:10;
+  filter:drop-shadow(0 6px 12px rgba(5,41,90,.45));
+}
+@media (max-width:420px){
+  .mascot-box{width:94px;height:94px;left:-8px;top:8px}
+  header{padding-left:44px}
+}
+header{text-align:center;padding:8px 0 6px;width:100%}
+.logo small{display:block;font-family:var(--f-display);font-size:13px;font-weight:700;letter-spacing:6px;color:var(--txt-suave)}
+.logo b{display:block;font-family:var(--f-display);font-style:italic;font-weight:900;font-size:44px;line-height:1.05;color:var(--blanco);text-shadow:0 0 16px var(--celeste),3px 3px 0 var(--azul-prof)}
+.tag{font-size:12px;letter-spacing:2px;color:var(--celeste);margin-top:4px;font-weight:700}
+
+/* Animación de Latido (Pulse) para el 5° lavado gratis */
+@keyframes heartBeatPulse {
+  0%, 100% { transform: rotate(-2deg) scale(1); }
+  50% { transform: rotate(-2deg) scale(1.07); }
+}
+.promo{
+  display:inline-block;
+  margin:16px auto 0;
+  background:var(--amarillo);
+  color:var(--amarillo-txt);
+  font-family:var(--f-display);
+  font-weight:800;
+  font-size:15px;
+  padding:10px 18px;
+  border-radius:14px;
+  box-shadow:0 4px 0 #d6a800;
+  animation: heartBeatPulse 1.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Keyframes de la mascota lavando el auto */
+@keyframes carBounce{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-2.5px) rotate(-0.8deg)}
+}
+@keyframes spongeScrub{
+  0%,100%{transform:translate(0,0) rotate(-6deg)}
+  25%{transform:translate(-9px,4px) rotate(6deg)}
+  50%{transform:translate(-4px,-3px) rotate(-4deg)}
+  75%{transform:translate(-11px,2px) rotate(8deg)}
+}
+@keyframes hoseSpray{
+  0%,100%{transform:rotate(0deg) scale(1)}
+  50%{transform:rotate(-5deg) scale(1.04)}
+}
+@keyframes waterFlow{
+  0%{stroke-dashoffset:24;opacity:.9}
+  100%{stroke-dashoffset:0;opacity:1}
+}
+@keyframes bubbleRise1{
+  0%{transform:translateY(0) scale(.7);opacity:0}
+  30%{opacity:1}
+  100%{transform:translateY(-22px) scale(1.15);opacity:0}
+}
+@keyframes bubbleRise2{
+  0%{transform:translateY(0) scale(.6);opacity:0}
+  40%{opacity:1}
+  100%{transform:translateY(-26px) scale(1.1);opacity:0}
+}
+.anim-car{animation:carBounce 1.6s ease-in-out infinite;transform-origin:center}
+.anim-sponge{animation:spongeScrub 1.2s ease-in-out infinite;transform-origin:145px 65px}
+.anim-hose{animation:hoseSpray 1.4s ease-in-out infinite;transform-origin:42px 68px}
+.anim-water{stroke-dasharray:6 4;animation:waterFlow .65s linear infinite}
+.b1{animation:bubbleRise1 1.8s ease-out infinite}
+.b2{animation:bubbleRise2 2.2s ease-out infinite .5s}
+.b3{animation:bubbleRise1 2s ease-out infinite 1s}
+
+h2{font-family:var(--f-display);font-size:13px;letter-spacing:3px;color:var(--celeste);text-transform:uppercase;margin:28px 2px 10px;font-weight:700}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:0 8px 20px rgba(5,41,90,.28)}
+.precio{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.16)}
+.precio:first-of-type{border-top:0}
+.precio .ic{font-size:28px;width:40px;text-align:center}
+.precio .nm{flex:1;font-weight:700;font-size:17px}
+.precio .pr{font-family:var(--f-display);font-weight:800;font-size:20px;font-variant-numeric:tabular-nums}
+.sub{font-size:14px;color:var(--txt-suave)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opt{background:var(--azul-prof);color:var(--txt);border:2px solid rgba(0,180,255,.35);border-radius:14px;padding:12px 6px;font:700 15px var(--f-body);cursor:pointer;text-align:center;min-width:0}
+.opt small{display:block;font-weight:600;font-size:11.5px;color:var(--txt-suave);margin-top:3px}
+.opt .e{display:block;font-size:26px;margin-bottom:2px}
+.opt[aria-pressed=true]{background:var(--amarillo);color:var(--amarillo-txt);border-color:var(--blanco)}
+.opt[aria-pressed=true] small{color:var(--amarillo-txt)}
+.opt:disabled{cursor:not-allowed;background:rgba(5,41,90,.38);border:2px dashed rgba(232,38,43,.65);color:rgba(207,230,255,.55)}
+
+/* Horario ocupado: se puede tocar si es tuyo para cancelarlo */
+.opt.ocupado{cursor:pointer;background:rgba(5,41,90,.42);border:2px dashed rgba(232,38,43,.75);color:rgba(207,230,255,.85)}
+.opt.ocupado span{text-decoration:line-through;opacity:.75}
+.opt.ocupado small{color:#fff;font-weight:800;background:var(--rojo);border-radius:6px;display:inline-block;padding:1px 6px;margin-top:4px;font-size:10.5px;letter-spacing:.4px;text-transform:uppercase}
+.opt.libre small{color:#7ef5a8}
+.opt[aria-pressed=true].libre small{color:var(--amarillo-txt)}
+
+.opt:focus-visible,input:focus-visible,textarea:focus-visible,.starsel button:focus-visible,.go:focus-visible,a:focus-visible,.lnk:focus-visible,.btn-cancel:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+.step{margin-top:18px}
+.step>label,.step>.lb{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:8px}
+.n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--celeste);color:var(--azul-prof);font-size:14px;font-weight:800;flex:none}
+.franja{font-size:12px;letter-spacing:2px;color:var(--txt-suave);text-transform:uppercase;margin:10px 2px 6px;font-weight:700}
+input,textarea{width:100%;padding:13px;border-radius:12px;border:2px solid transparent;font:inherit;font-size:16px;background:#fff;color:#0a2a52}
+.stars{color:var(--amarillo);letter-spacing:2px;font-size:18px}
+.rating{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.rating b{font-family:var(--f-display);font-size:36px}
+.rev{border-top:1px solid rgba(255,255,255,.16);padding:12px 0}
+.rev:first-of-type{border-top:0}
+.rev q{display:block;margin:4px 0;quotes:none}
+.starsel{display:flex;gap:4px;justify-content:center;margin:4px 0 8px}
+.starsel button{background:none;border:0;font-size:40px;line-height:1;color:#7fa6d6;cursor:pointer;padding:2px 4px}
+.starsel button[aria-pressed=true]{color:var(--amarillo)}
+label.l{display:block;font-weight:700;margin:14px 0 6px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin-top:14px}
+.chk input{width:22px;height:22px;flex:none;margin:0}
+.resumen{margin-top:20px;background:var(--azul-prof);border-radius:16px;padding:14px;font-size:15px}
+.resumen b{color:var(--amarillo)}
+.go{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:14px;border:0;border-radius:16px;padding:16px;background:var(--verde);color:#06331a;font:800 17px var(--f-body);cursor:pointer;box-shadow:0 4px 0 #189c49}
+.go:disabled{background:#3b6aa6;color:#a9c4e8;cursor:not-allowed;box-shadow:none}
+.aviso{font-size:13px;color:var(--txt-suave);margin-top:10px;text-align:center}
+.falta{font-size:14px;color:var(--amarillo);margin-top:10px;text-align:center;min-height:20px;font-weight:600}
+.ok{background:var(--verde);color:#06331a;border-radius:14px;padding:15px;margin-top:14px;font-weight:700}
+.ok .lnk{display:block;margin-top:10px;background:var(--azul-prof);color:#fff;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;border:0;width:100%;font-size:15px;cursor:pointer}
+.ok .lnk-cancel{background:var(--rojo);margin-top:8px}
+.err{background:var(--rojo);color:#fff;border-radius:14px;padding:12px;margin-top:14px;font-weight:700;text-align:center}
+.estado{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;color:var(--txt-suave);margin:0 2px 12px;background:rgba(5,41,90,.45);padding:8px 12px;border-radius:10px}
+.badge-auto{background:var(--verde);color:#06331a;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px}
+.leyenda{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--txt-suave);margin-top:10px}
+.leyenda i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:-1px}
+
+/* Banner destacado de Mis Turnos Activos arriba */
+.mis-banner{background:var(--azul-prof);border:2px solid var(--amarillo);border-radius:16px;padding:14px;margin-top:16px}
+.mis-banner-title{font-family:var(--f-display);font-size:12px;letter-spacing:2px;color:var(--amarillo);text-transform:uppercase;font-weight:800;margin-bottom:8px}
+.turno-item{background:rgba(15,107,208,.45);border-radius:12px;padding:12px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.18)}
+.turno-item:first-of-type{margin-top:0}
+.turno-info b{color:#fff;display:block;font-size:15.5px}
+.turno-info span{font-size:13px;color:var(--txt-suave);display:block;margin-top:2px}
+.btn-cancel{background:var(--rojo);color:#fff;border:0;border-radius:10px;padding:10px 14px;font:800 13px var(--f-body);cursor:pointer;white-space:nowrap;box-shadow:0 3px 0 #9e1418}
+.btn-cancel:hover{filter:brightness(1.1)}
+
+/* Modal de confirmación / cancelación rápida */
+.modal-bg{position:fixed;inset:0;background:rgba(3,20,46,.82);display:grid;place-items:center;padding:16px;z-index:100}
+.modal{background:var(--card);border:2px solid var(--celeste);border-radius:20px;padding:20px;max-width:400px;width:100%;box-shadow:0 16px 36px rgba(0,0,0,.5)}
+.modal h3{margin:0 0 8px;font-family:var(--f-display);font-size:18px;color:#fff}
+.modal p{margin:0 0 14px;font-size:15px;color:var(--txt-suave)}
+.modal-btns{display:flex;gap:10px;margin-top:14px}
+.modal-btns button{flex:1;padding:12px;border-radius:12px;border:0;font:700 15px var(--f-body);cursor:pointer}
+.m-no{background:var(--azul-prof);color:#fff}
+.m-si{background:var(--rojo);color:#fff}
+
+.info{display:grid;gap:10px}
+.info div{display:flex;gap:10px;align-items:flex-start}
+.info .ic{font-size:22px;flex:none;width:30px;text-align:center}
+.trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+footer{text-align:center;margin-top:30px;font-size:13px;color:var(--txt-suave)}
+footer a{color:var(--amarillo)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:no-preference){.opt,.go,.btn-cancel{transition:transform .08s}.opt:active,.go:active,.btn-cancel:active{transform:scale(.97)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header-top">
+    <!-- Animación en parte superior izquierda con fondo transparente -->
+    <div class="mascot-box" aria-hidden="true">
+      <svg viewBox="0 0 200 200" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="102" cy="176" rx="68" ry="10" fill="#00b4ff" fill-opacity="0.32"/>
+        <g class="anim-car">
+          <rect x="44" y="148" width="22" height="24" rx="8" fill="#1b263b" stroke="#081226" stroke-width="4"/>
+          <rect x="134" y="148" width="22" height="24" rx="8" fill="#1b263b" stroke="#081226" stroke-width="4"/>
+          <path d="M56 102 C60 72, 140 72, 144 102 Z" fill="#e8262b" stroke="#111827" stroke-width="4.5" stroke-linejoin="round"/>
+          <path d="M64 100 C68 79, 132 79, 136 100 Z" fill="#7dd3fc" stroke="#111827" stroke-width="4"/>
+          <ellipse cx="42" cy="105" rx="9" ry="6" fill="#e8262b" stroke="#111827" stroke-width="4"/>
+          <ellipse cx="158" cy="105" rx="9" ry="6" fill="#e8262b" stroke="#111827" stroke-width="4"/>
+          <path d="M40 124 C40 104, 160 104, 160 124 L163 148 C163 155, 37 155, 37 148 Z" fill="#ef233c" stroke="#111827" stroke-width="4.5"/>
+          <ellipse cx="100" cy="136" rx="30" ry="12" fill="#1e293b" stroke="#cbd5e1" stroke-width="3.5"/>
+          <circle cx="55" cy="129" r="11" fill="#f8fafc" stroke="#111827" stroke-width="4"/>
+          <circle cx="53" cy="127" r="4" fill="#bae6fd"/>
+          <circle cx="145" cy="129" r="11" fill="#f8fafc" stroke="#111827" stroke-width="4"/>
+          <circle cx="147" cy="127" r="4" fill="#bae6fd"/>
+          <rect x="33" y="147" width="134" height="11" rx="5.5" fill="#0ea5e9" stroke="#111827" stroke-width="4"/>
+          <path d="M78 104 C74 96, 86 92, 92 97 C98 91, 110 93, 112 100 C119 101, 120 110, 112 113 C106 118, 92 118, 84 113 C75 112, 74 106, 78 104 Z" fill="#ffffff" stroke="#38bdf8" stroke-width="2.5"/>
+        </g>
+        <g class="anim-hose">
+          <path d="M24 166 C8 135, 12 95, 28 74" stroke="#84cc16" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M24 166 C8 135, 12 95, 28 74" stroke="#111827" stroke-width="13" stroke-linecap="round" fill="none" opacity="0.25"/>
+          <path d="M24 72 L46 62 L50 71 L28 80 Z" fill="#64748b" stroke="#111827" stroke-width="3.5" stroke-linejoin="round"/>
+          <rect x="20" y="62" width="18" height="22" rx="8" fill="#fed7aa" stroke="#111827" stroke-width="3.5"/>
+          <path d="M50 65 C75 52, 102 58, 115 84 C104 82, 94 94, 86 96 C78 82, 66 74, 49 70 Z" fill="#0ea5e9" stroke="#0369a1" stroke-width="2.5"/>
+          <path class="anim-water" d="M53 66 C76 56, 98 63, 108 82" stroke="#bae6fd" stroke-width="3" stroke-linecap="round"/>
+          <path class="anim-water" d="M51 69 C72 64, 88 73, 94 90" stroke="#e0f2fe" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        <g class="anim-sponge">
+          <path d="M168 104 C174 86, 170 72, 158 66" stroke="#334155" stroke-width="12" stroke-linecap="round"/>
+          <rect x="122" y="54" width="32" height="38" rx="7" transform="rotate(14 138 73)" fill="#facc15" stroke="#111827" stroke-width="3.5"/>
+          <circle cx="133" cy="66" r="2" fill="#ca8a04"/>
+          <circle cx="144" cy="72" r="2.2" fill="#ca8a04"/>
+          <circle cx="131" cy="79" r="1.8" fill="#ca8a04"/>
+          <rect x="142" y="56" width="18" height="22" rx="8" fill="#fed7aa" stroke="#111827" stroke-width="3.5"/>
+          <circle cx="123" cy="84" r="7" fill="#ffffff" stroke="#38bdf8" stroke-width="2"/>
+          <circle cx="133" cy="89" r="8" fill="#ffffff" stroke="#38bdf8" stroke-width="2"/>
+          <circle cx="144" cy="86" r="6" fill="#ffffff" stroke="#38bdf8" stroke-width="2"/>
+        </g>
+        <circle class="b1" cx="112" cy="48" r="5" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+        <circle class="b2" cx="154" cy="42" r="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+        <circle class="b3" cx="92" cy="40" r="4" fill="#ffffff" stroke="#0284c7" stroke-width="1.8"/>
+        <circle class="b1" cx="166" cy="56" r="3.5" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <header>
+      <div class="logo"><small>LAVADERO</small><b>EL TOBI</b></div>
+      <div class="tag">EL MEJOR CUIDADO PARA TU VEHÍCULO</div>
+      <div class="promo">Tu 5° lavado… ¡es GRATIS!</div>
+    </header>
+  </div>
+
+<main>
+  <!-- Si el usuario ya tiene un turno reservado en este dispositivo, aparece acá arriba con 1 clic para cancelar -->
+  <div class="mis-banner" id="misBanner" hidden>
+    <div class="mis-banner-title">📅 Tu turno reservado</div>
+    <div id="misturnos"></div>
+  </div>
+
+  <h2>Lavado completo</h2>
+  <div class="card" id="precios"></div>
+
+  <h2>Reservá tu turno</h2>
+  <div class="card">
+    <div class="estado">
+      <span id="estadotxt">Conectando turnos en tiempo real…</span>
+      <span class="badge-auto">⚡ Reserva automática</span>
+    </div>
+
+    <div class="step" style="margin-top:0">
+      <div class="lb"><span class="n">1</span>¿Qué vehículo traés?</div>
+      <div class="grid3" id="veh"></div>
+    </div>
+
+    <div class="step">
+      <div class="lb"><span class="n">2</span>¿Qué día?</div>
+      <div class="grid3" id="dias"></div>
+    </div>
+
+    <div class="step">
+      <div class="lb"><span class="n">3</span>¿A qué hora?</div>
+      <div id="horas"><div class="sub">Primero elegí el día para ver disponibles y ocupados.</div></div>
+      <div class="leyenda" id="leyenda" hidden>
+        <span><i style="background:var(--azul-prof);border:2px solid var(--celeste)"></i>Disponible</span>
+        <span><i style="border:2px dashed rgba(232,38,43,.8);background:rgba(5,41,90,.4)"></i>No disponible (Tocá si es tuyo y querés cancelar)</span>
+        <span><i style="background:var(--amarillo)"></i>Tu elección</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <label for="nom"><span class="n">4</span>Tu nombre</label>
+      <input id="nom" autocomplete="name" placeholder="Nombre y apellido" maxlength="60">
+      
+      <label class="l" for="tel">Tu WhatsApp (por cualquier aviso)</label>
+      <input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ej: 3462 123456" maxlength="20">
+
+      <label class="l" for="pat">Patente <span class="sub" style="font-weight:500">(opcional)</span></label>
+      <input id="pat" autocapitalize="characters" autocomplete="off" placeholder="AB 123 CD" maxlength="10">
+      <div class="trampa" aria-hidden="true"><label>No completar<input id="web" tabindex="-1" autocomplete="off"></label></div>
+    </div>
+
+    <div class="resumen" id="resumen" aria-live="polite"></div>
+    <div class="falta" id="falta" aria-live="polite"></div>
+    <button class="go" id="go" type="button" disabled>Confirmar turno automáticamente</button>
+    <div class="aviso" id="aviso"></div>
+    <div class="ok" id="ok" hidden></div>
+    <div class="err" id="err" hidden role="alert"></div>
+  </div>
+
+  <h2>Opiniones de clientes</h2>
+  <div class="card" id="opiniones">
+    <div id="oplista"></div>
+    <button type="button" class="opt" id="opbtn" style="width:100%;margin-top:12px">⭐ Dejar mi opinión</button>
+    <div id="opform" hidden>
+      <div class="lb" style="margin-top:16px;font-weight:700">¿Cuántas estrellas le ponés?</div>
+      <div class="starsel" id="starsel"></div>
+      <label class="l" for="opnom">Tu nombre (opcional)</label>
+      <input id="opnom" autocomplete="given-name" maxlength="40">
+      <label class="l" for="opcom">Tu comentario</label>
+      <textarea id="opcom" rows="3" maxlength="400" placeholder="Contanos cómo te fue"></textarea>
+      <label class="chk"><input type="checkbox" id="opok"><span>Autorizo a publicar mi opinión en esta página.</span></label>
+      <button class="go" id="opgo" type="button" disabled>Enviar mi opinión por WhatsApp</button>
+      <div class="aviso">Tu opinión nos llega por WhatsApp. Solo la publicamos si nos das permiso.</div>
+    </div>
+  </div>
+
+  <h2>Cómo atendemos</h2>
+  <div class="card info">
+    <div><span class="ic">🕖</span><span><b>Lunes a sábado.</b><br><span class="sub">Mañana desde las 07:00 y tarde desde las 15:00, hasta las 21:00.</span></span></div>
+    <div><span class="ic">⏱️</span><span><b>Turnos de 1 hora y media.</b></span></div>
+    <div><span class="ic">📍</span><span><b id="dir"></b></span></div>
+    <div><span class="ic">🎁</span><span><b>Tu 5° lavado es gratis.</b></span></div>
+  </div>
+</main>
+
+<footer>
+  Lavadero El Tobi · <a id="wa" href="#" rel="noopener">Escribinos por WhatsApp</a>
+</footer>
+</div>
+
+<!-- Modal sencillo para cancelar un turno -->
+<div class="modal-bg" id="modalCancel" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <h3 id="modalTitle">¿Cancelar este turno?</h3>
+    <p id="modalDesc"></p>
+    <div id="modalVerifyBox" hidden>
+      <label class="l" for="verifyTel" style="margin-top:0">Ingresá los últimos 4 números de tu teléfono para confirmar:</label>
+      <input id="verifyTel" type="tel" inputmode="numeric" maxlength="15" placeholder="Ej: 2731">
+      <div id="verifyErr" style="color:var(--amarillo);font-size:13px;font-weight:700;margin-top:6px" hidden></div>
+    </div>
+    <div class="modal-btns">
+      <button type="button" class="m-no" id="modalNo">Volver</button>
+      <button type="button" class="m-si" id="modalSi">Sí, cancelar turno</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getFirestore, doc, deleteDoc, collection, onSnapshot, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+(function(){
+'use strict';
+/* ====== Datos del negocio ====== */
+var CONFIG={
+  whatsapp:'5493462688044',       // Número de WhatsApp: 3462688044
+  direccion:'Francia 627',
+  servicio:'Lavado completo',
+  precios:{auto:30000,camioneta:45000,moto:10000},
+  turnos:{manana:['07:00','08:30','10:00'],tarde:['15:00','16:30','18:00','19:30']},
+  anticipacionMin:30,
+  diasAMostrar:9,
+  opiniones:[],
+  firebasePublico: {
+    apiKey: "AIzaSyBtuMIvGefp0gjLtdDkeT0PBTewpa03-hg",
+    authDomain: "lavadero-el-tobi.firebaseapp.com",
+    projectId: "lavadero-el-tobi",
+    storageBucket: "lavadero-el-tobi.firebasestorage.app",
+    messagingSenderId: "155855591412",
+    appId: "1:155855591412:web:7286bdf9e0a408fe508ba1",
+    measurementId: "G-CTWTJSBN1L"
+  }
+};
+/* ================================================== */
+
+var DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+var CORTO=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+var VEH=[{k:'auto',n:'Auto',e:'🚗'},{k:'camioneta',n:'Camioneta',e:'🛻'},{k:'moto',n:'Moto',e:'🏍️'}];
+var st={v:null,d:null,h:null},rv={stars:0};
+var turnoACancelar=null,requiereVerif=false;
+var STORAGE_KEY='eltobi_turnos_registrados_v1';
+var MIS_IDS_KEY='eltobi_mis_ids_v1';
+var reservas=cargarLocal();
+var misIds=cargarMisIds();
+var db=null,appId='lavadero-el-tobi',nubeActiva=false;
+var guardando=false;
+
+function cargarLocal(){
+  try{
+    var raw=localStorage.getItem(STORAGE_KEY);
+    var arr=raw?JSON.parse(raw):[];
+    var hoyStr=ymd(new Date());
+    return Array.isArray(arr)?arr.filter(function(r){return r&&r.fecha>=hoyStr}):[];
+  }catch(e){return []}
+}
+function guardarLocal(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(reservas))}catch(e){}
+}
+function cargarMisIds(){
+  try{
+    var raw=localStorage.getItem(MIS_IDS_KEY);
+    return raw?JSON.parse(raw):[];
+  }catch(e){return []}
+}
+function guardarMisIds(){
+  try{localStorage.setItem(MIS_IDS_KEY,JSON.stringify(misIds))}catch(e){}
+}
+
+function q(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+function fm(n){return '$ '+n.toLocaleString('es-AR')}
+function ymd(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(x<10?'0':'')+x}
+function parse(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function mins(t){var p=t.split(':');return +p[0]*60+ +p[1]}
+function digits(s){return String(s||'').replace(/\D/g,'')}
+function todos(){return CONFIG.turnos.manana.concat(CONFIG.turnos.tarde)}
+
+/* ---------- Inicialización de Almacenamiento Compartido en Tiempo Real ---------- */
+async function iniciarNube(){
+  try{
+    var firebaseConfig=CONFIG.firebasePublico||(typeof __firebase_config!=='undefined'?JSON.parse(__firebase_config):null);
+    if(!firebaseConfig){
+      q('estadotxt').textContent='Modo local activo';
+      paint();
+      return;
+    }
+    var app=initializeApp(firebaseConfig);
+    db=getFirestore(app);
+
+    var turnosRef=collection(db,'artifacts',appId,'public','data','turnos_eltobi');
+    onSnapshot(turnosRef,function(snapshot){
+      var hoyStr=ymd(new Date());
+      var lista=[];
+      snapshot.forEach(function(docSnap){
+        var data=docSnap.data();
+        if(data&&data.fecha>=hoyStr){
+          lista.push(Object.assign({docId:docSnap.id},data));
+        }
+      });
+      reservas=lista;
+      nubeActiva=true;
+      guardarLocal();
+      q('estadotxt').textContent='🟢 Turnos sincronizados en vivo';
+      paint();
+    },function(err){
+      console.error('Error sincronizando turnos:',err);
+      nubeActiva=false;
+      q('estadotxt').textContent='Agenda local activa';
+    });
+  }catch(e){
+    console.error('Error inicializando nube:',e);
+    nubeActiva=false;
+    q('estadotxt').textContent='Agenda local activa';
+  }
+}
+
+/* ---------- Opiniones ---------- */
+function estrellas(n){var s='';for(var i=1;i<=5;i++)s+=i<=n?'★':'☆';return s}
+function opinionesValidas(){
+  return (CONFIG.opiniones||[]).filter(function(o){return o&&o.texto&&+o.estrellas>=1}).map(function(o){return {nombre:o.nombre||'Cliente',estrellas:Math.min(5,Math.max(1,Math.round(+o.estrellas))),texto:o.texto}});
+}
+function paintOp(){
+  var L=opinionesValidas(),h='';
+  if(L.length){
+    var avg=L.reduce(function(a,o){return a+o.estrellas},0)/L.length;
+    h+='<div class="rating"><b>'+avg.toLocaleString('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1})+'</b><div><div class="stars" aria-hidden="true">'+estrellas(Math.round(avg))+'</div><div class="sub">'+L.length+(L.length===1?' opinión':' opiniones')+'</div></div></div>';
+    h+=L.map(function(o){return '<div class="rev"><div class="stars" role="img" aria-label="'+o.estrellas+' de 5 estrellas">'+estrellas(o.estrellas)+'</div><q>'+esc(o.texto)+'</q><div class="sub">— '+esc(o.nombre)+'</div></div>'}).join('');
+  }else h='<div class="sub">Todavía no hay opiniones publicadas. ¡Podés ser el primero en dejar la tuya!</div>';
+  q('oplista').innerHTML=h;
+  q('starsel').innerHTML=[1,2,3,4,5].map(function(i){return '<button type="button" data-star="'+i+'" aria-label="'+i+(i===1?' estrella':' estrellas')+'" aria-pressed="'+(rv.stars>=i)+'">★</button>'}).join('');
+  q('opgo').disabled=!(rv.stars>0&&q('opok').checked);
+}
+
+/* ---------- Disponibilidad ---------- */
+function slotsDe(fecha){
+  var t=todos(),hoy=new Date();
+  if(fecha!==ymd(hoy))return t;
+  var ahora=hoy.getHours()*60+hoy.getMinutes()+CONFIG.anticipacionMin;
+  return t.filter(function(x){return mins(x)>=ahora});
+}
+function turnoEn(f,h){
+  return reservas.filter(function(r){return r.fecha===f&&r.hora===h})[0]||null;
+}
+function ocupado(f,h){
+  return !!turnoEn(f,h);
+}
+function libres(f){
+  return slotsDe(f).filter(function(h){return !ocupado(f,h)});
+}
+function diasLista(){
+  var out=[],d=new Date();d.setHours(0,0,0,0);
+  for(var i=0;i<45&&out.length<CONFIG.diasAMostrar;i++){
+    var f=ymd(d);
+    if(d.getDay()!==0&&slotsDe(f).length)out.push(f);
+    d.setDate(d.getDate()+1);
+  }
+  return out;
+}
+function etiquetaDia(f){
+  var d=parse(f),hoy=new Date();hoy.setHours(0,0,0,0);
+  var diff=Math.round((d-hoy)/86400000);
+  return diff===0?'Hoy':diff===1?'Mañana':CORTO[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1);
+}
+function fechaLarga(f){var d=parse(f);return DIAS[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)}
+
+/* ---------- Banner superior con tus turnos reservados ---------- */
+function renderMisTurnos(){
+  var banner=q('misBanner');
+  var cont=q('misturnos');
+  var propios=reservas.filter(function(r){return misIds.indexOf(r.id)>=0});
+  if(!propios.length){
+    banner.hidden=true;
+    return;
+  }
+  banner.hidden=false;
+  var ordenados=propios.slice().sort(function(a,b){return (a.fecha+a.hora).localeCompare(b.fecha+b.hora)});
+  cont.innerHTML=ordenados.map(function(r){
+    var vObj=VEH.filter(function(x){return x.k===r.vehiculo})[0]||{n:'Vehículo',e:'🚗'};
+    return '<div class="turno-item">'
+      +'<div class="turno-info">'
+      +'<b>'+vObj.e+' '+esc(fechaLarga(r.fecha))+' · '+esc(r.hora)+' hs</b>'
+      +'<span>'+esc(r.nombre)+' · '+vObj.n+(r.patente?' ('+esc(r.patente)+')':'')+'</span>'
+      +'</div>'
+      +'<button type="button" class="btn-cancel" data-cancel-id="'+esc(r.id)+'">Cancelar turno</button>'
+      +'</div>';
+  }).join('');
+}
+
+/* ---------- Pintar interfaz principal ---------- */
+function paint(){
+  q('precios').innerHTML=VEH.map(function(v){return '<div class="precio"><span class="ic">'+v.e+'</span><span class="nm">'+v.n+'</span><span class="pr">'+fm(CONFIG.precios[v.k])+'</span></div>'}).join('')+'<div class="sub" style="margin-top:6px">Precios por '+CONFIG.servicio.toLowerCase()+'.</div>';
+  q('veh').innerHTML=VEH.map(function(v){return '<button type="button" class="opt" data-v="'+v.k+'" aria-pressed="'+(st.v===v.k)+'"><span class="e">'+v.e+'</span>'+v.n+'<small>'+fm(CONFIG.precios[v.k])+'</small></button>'}).join('');
+
+  var dias=diasLista();
+  if(st.d&&dias.indexOf(st.d)<0){st.d=null;st.h=null}
+  q('dias').innerHTML=dias.map(function(f){
+    var n=libres(f).length,totalDia=slotsDe(f).length,lleno=n===0;
+    return '<button type="button" class="opt" data-d="'+f+'" aria-pressed="'+(st.d===f)+'"'+(lleno?' disabled':'')+'>'
+      +etiquetaDia(f)
+      +'<small>'+(lleno?'Completo':n+' de '+totalDia+' libres')+'</small>'
+      +'</button>';
+  }).join('');
+
+  if(!st.d){
+    q('horas').innerHTML='<div class="sub">Primero elegí el día para ver los horarios disponibles y no disponibles.</div>';
+    q('leyenda').hidden=true;
+  }else{
+    var sl=slotsDe(st.d);
+    if(st.h&&(sl.indexOf(st.h)<0||ocupado(st.d,st.h)))st.h=null;
+    var bloque=function(titulo,arr){
+      var a=arr.filter(function(t){return sl.indexOf(t)>=0});
+      return a.length?'<div class="franja">'+titulo+'</div><div class="grid3">'+a.map(function(t){
+        var oc=ocupado(st.d,t);
+        if(oc){
+          return '<button type="button" class="opt ocupado" data-occ-h="'+t+'" aria-label="'+t+', no disponible">'
+            +'<span>'+t+'</span>'
+            +'<small>No disponible</small>'
+            +'</button>';
+        }
+        return '<button type="button" class="opt libre" data-h="'+t+'" aria-pressed="'+(st.h===t)+'">'
+          +'<span>'+t+'</span>'
+          +'<small>Disponible</small>'
+          +'</button>';
+      }).join('')+'</div>':'';
+    };
+    q('horas').innerHTML=bloque('Mañana',CONFIG.turnos.manana)+bloque('Tarde',CONFIG.turnos.tarde);
+    q('leyenda').hidden=false;
+  }
+
+  q('aviso').textContent='Tu turno queda reservado al instante y se envía aviso automático al WhatsApp del lavadero.';
+
+  var nom=q('nom').value.trim(),tel=digits(q('tel').value),falta=[];
+  if(!st.v)falta.push('el vehículo');
+  if(!st.d)falta.push('el día');else if(!st.h)falta.push('la hora');
+  if(!nom)falta.push('tu nombre');
+  if(tel.length<8)falta.push('tu WhatsApp');
+
+  q('resumen').innerHTML=(st.v||st.d||st.h)
+    ?'<b>Tu pedido:</b> '+CONFIG.servicio
+      +(st.v?' · '+VEH.filter(function(v){return v.k===st.v})[0].n+' · <b>'+fm(CONFIG.precios[st.v])+'</b>':'')
+      +(st.d?'<br>'+fechaLarga(st.d)+(st.h?' a las <b>'+st.h+' hs</b>':''):'')
+    :'<span class="sub">Elegí las opciones y acá ves tu pedido automático.</span>';
+
+  q('falta').textContent=falta.length?'Falta completar: '+falta.join(', ')+'.':'';
+  q('go').textContent=guardando?'Confirmando turno…':'Confirmar turno automáticamente';
+  q('go').disabled=falta.length>0||guardando;
+  renderMisTurnos();
+}
+
+/* ---------- Reserva Automática con Transacción ---------- */
+async function confirmarReservaAutomatica(){
+  q('err').hidden=true;
+  if(q('web').value||guardando)return;
+
+  var nom=q('nom').value.trim();
+  var tel=digits(q('tel').value);
+  var pat=q('pat').value.trim().toUpperCase();
+
+  if(!st.v||!st.d||!st.h||!nom||tel.length<8)return;
+
+  if(ocupado(st.d,st.h)){
+    q('err').textContent='Ese horario se acaba de ocupar. Elegí otro disponible.';
+    q('err').hidden=false;
+    st.h=null;
+    paint();
+    return;
+  }
+
+  guardando=true;
+  paint();
+
+  var slotKey=st.d+'_'+st.h.replace(':','');
+  var nuevoTurno={
+    id:'T-'+Date.now().toString(36).toUpperCase(),
+    slotKey:slotKey,
+    fecha:st.d,
+    hora:st.h,
+    nombre:nom,
+    telefono:tel,
+    vehiculo:st.v,
+    patente:pat,
+    creado:new Date().toISOString()
+  };
+
+  try{
+    if(db){
+      var turnoDocRef=doc(db,'artifacts',appId,'public','data','turnos_eltobi',slotKey);
+      await runTransaction(db,async function(transaction){
+        var docExistente=await transaction.get(turnoDocRef);
+        if(docExistente.exists()){
+          throw new Error('SLOT_OCUPADO');
+        }
+        transaction.set(turnoDocRef,Object.assign({},nuevoTurno,{serverCreatedAt:serverTimestamp()}));
+      });
+    }
+    reservas=reservas.filter(function(r){return !(r.fecha===nuevoTurno.fecha&&r.hora===nuevoTurno.hora)});
+    reservas.push(nuevoTurno);
+    guardarLocal();
+    if(misIds.indexOf(nuevoTurno.id)<0){
+      misIds.push(nuevoTurno.id);
+      guardarMisIds();
+    }
+
+    var vObj=VEH.filter(function(x){return x.k===nuevoTurno.vehiculo})[0];
+    var precioStr=fm(CONFIG.precios[nuevoTurno.vehiculo]);
+    var textoAviso='✅ *NUEVO TURNO RESERVADO (AUTOMÁTICO)*\n'
+      +'Lavadero El Tobi\n\n'
+      +'👤 *Cliente:* '+nuevoTurno.nombre+'\n'
+      +'📱 *WhatsApp cliente:* '+nuevoTurno.telefono+'\n'
+      +'🚘 *Vehículo:* '+vObj.n+(nuevoTurno.patente?' ('+nuevoTurno.patente+')':'')+'\n'
+      +'📅 *Día:* '+fechaLarga(nuevoTurno.fecha)+'\n'
+      +'⏰ *Hora:* '+nuevoTurno.hora+' hs\n'
+      +'💰 *Valor:* '+precioStr+'\n'
+      +'🆔 *Código:* '+nuevoTurno.id;
+
+    var waUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(textoAviso);
+
+    q('ok').innerHTML='✅ <b>¡Turno confirmado automáticamente!</b><br>'
+      +'<span style="font-weight:500">'+esc(nuevoTurno.nombre)+' · '+vObj.n+' · '+fechaLarga(nuevoTurno.fecha)+' a las '+nuevoTurno.hora+' hs.<br>'
+      +'Te esperamos en '+esc(CONFIG.direccion)+'.</span>'
+      +'<a class="lnk" href="'+waUrl+'" target="_blank" rel="noopener">📲 Enviar comprobante por WhatsApp al lavadero</a>'
+      +'<button type="button" class="lnk lnk-cancel" data-cancel-id="'+esc(nuevoTurno.id)+'">❌ Cancelar este turno</button>';
+    q('ok').hidden=false;
+
+    st={v:null,d:null,h:null};
+    q('nom').value='';
+    q('pat').value='';
+    guardando=false;
+    paint();
+
+    try{
+      window.open(waUrl,'_blank','noopener');
+    }catch(e){
+      window.location.href=waUrl;
+    }
+  }catch(err){
+    console.error('Error al reservar:',err);
+    guardando=false;
+    if(err&&err.message==='SLOT_OCUPADO'){
+      q('err').textContent='⚠️ ¡Justo en este segundo otro cliente reservó ese mismo horario! Elegí otro disponible.';
+      st.h=null;
+    }else{
+      q('err').textContent='No pudimos confirmar el turno. Revisá tu conexión e intentá de nuevo.';
+    }
+    q('err').hidden=false;
+    paint();
+  }
+}
+
+/* ---------- Cancelación Rápida ---------- */
+function abrirModalCancelacion(id, desdeHorarioOcupado){
+  var t=reservas.filter(function(r){return r.id===id})[0];
+  if(!t)return;
+  turnoACancelar=t;
+  var esMioEnEsteCel=misIds.indexOf(t.id)>=0;
+  requiereVerif=!!desdeHorarioOcupado && !esMioEnEsteCel;
+
+  var vObj=VEH.filter(function(x){return x.k===t.vehiculo})[0]||{n:'Vehículo'};
+  q('verifyErr').hidden=true;
+  q('verifyTel').value='';
+
+  if(requiereVerif){
+    q('modalTitle').textContent='Horario ocupado ('+t.hora+' hs)';
+    q('modalDesc').innerHTML='Este turno del <b>'+esc(fechaLarga(t.fecha))+'</b> está reservado a nombre de <b>'+esc(t.nombre)+'</b>.<br><br>Si es tu turno y querés cancelarlo, ingresá los últimos 4 números de tu teléfono:';
+    q('modalVerifyBox').hidden=false;
+  }else{
+    q('modalTitle').textContent='¿Cancelar este turno?';
+    q('modalDesc').innerHTML='Vas a cancelar tu turno ('+vObj.n+') del <b>'+esc(fechaLarga(t.fecha))+' a las '+esc(t.hora)+' hs</b>.<br><br>El horario volverá a quedar <b>Disponible</b> al instante.';
+    q('modalVerifyBox').hidden=true;
+  }
+  q('modalCancel').hidden=false;
+}
+
+async function ejecutarCancelacion(){
+  if(!turnoACancelar)return;
+  var t=turnoACancelar;
+
+  if(requiereVerif){
+    var ing=digits(q('verifyTel').value);
+    var telReal=digits(t.telefono);
+    if(ing.length<4 || telReal.slice(-4)!==ing.slice(-4)){
+      q('verifyErr').textContent='Esos últimos 4 números no coinciden con la reserva.';
+      q('verifyErr').hidden=false;
+      return;
+    }
+  }
+
+  var vObj=VEH.filter(function(x){return x.k===t.vehiculo})[0]||{n:'Vehículo'};
+  q('modalCancel').hidden=true;
+  turnoACancelar=null;
+
+  try{
+    if(db){
+      var docKey=t.docId||t.slotKey||(t.fecha+'_'+t.hora.replace(':',''));
+      await deleteDoc(doc(db,'artifacts',appId,'public','data','turnos_eltobi',docKey));
+    }
+    reservas=reservas.filter(function(r){return r.id!==t.id});
+    guardarLocal();
+    misIds=misIds.filter(function(x){return x!==t.id});
+    guardarMisIds();
+
+    var msgCancel='❌ *TURNO CANCELADO*\n'
+      +'Lavadero El Tobi\n\n'
+      +'👤 *Cliente:* '+t.nombre+'\n'
+      +'📱 *Teléfono:* '+t.telefono+'\n'
+      +'🚘 *Vehículo:* '+vObj.n+'\n'
+      +'📅 *Día liberado:* '+fechaLarga(t.fecha)+'\n'
+      +'⏰ *Hora liberada:* '+t.hora+' hs\n'
+      +'🆔 *Código:* '+t.id;
+
+    var waCancelUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msgCancel);
+
+    q('ok').innerHTML='🗑️ <b>Turno cancelado correctamente.</b><br>'
+      +'<span style="font-weight:500">El horario del '+esc(fechaLarga(t.fecha))+' a las '+esc(t.hora)+' hs ya volvió a quedar disponible.</span>'
+      +'<a class="lnk" href="'+waCancelUrl+'" target="_blank" rel="noopener">📲 Avisar cancelación por WhatsApp</a>';
+    q('ok').hidden=false;
+
+    paint();
+
+    try{
+      window.open(waCancelUrl,'_blank','noopener');
+    }catch(e){}
+  }catch(err){
+    console.error('Error al cancelar:',err);
+    q('err').textContent='No se pudo cancelar el turno en este momento. Intentá de nuevo.';
+    q('err').hidden=false;
+  }
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+
+  if(b.id==='opbtn'){var f=q('opform');f.hidden=!f.hidden;b.textContent=f.hidden?'⭐ Dejar mi opinión':'Cerrar';return}
+  if(b.dataset.star){rv.stars=+b.dataset.star;paintOp();return}
+  if(b.id==='opgo'){
+    if(b.disabled)return;
+    var nom=q('opnom').value.trim()||'Cliente',com=q('opcom').value.trim(),est='';
+    for(var i=0;i<rv.stars;i++)est+='⭐';
+    var msg='¡Hola! Quiero dejar mi opinión sobre Lavadero El Tobi:\n\n'+est+' ('+rv.stars+'/5)\n'+(com?'Comentario: '+com+'\n':'')+'Nombre: '+nom+'\n\nAutorizo a publicar mi opinión en la página.';
+    window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msg),'_blank','noopener');
+    return;
+  }
+  if(b.dataset.v){st.v=b.dataset.v;paint();return}
+  if(b.dataset.d){st.d=b.dataset.d;st.h=null;q('ok').hidden=true;paint();return}
+  if(b.dataset.h){st.h=b.dataset.h;paint();return}
+  if(b.dataset.occH){
+    var tOcc=turnoEn(st.d,b.dataset.occH);
+    if(tOcc)abrirModalCancelacion(tOcc.id,true);
+    return;
+  }
+  if(b.id==='go'){
+    if(b.disabled)return;
+    confirmarReservaAutomatica();
+    return;
+  }
+  if(b.dataset.cancelId){
+    abrirModalCancelacion(b.dataset.cancelId,false);
+    return;
+  }
+  if(b.id==='modalNo'){
+    q('modalCancel').hidden=true;
+    turnoACancelar=null;
+    return;
+  }
+  if(b.id==='modalSi'){
+    ejecutarCancelacion();
+    return;
+  }
+});
+
+q('nom').addEventListener('input',paint);
+q('tel').addEventListener('input',paint);
+q('opok').addEventListener('change',paintOp);
+q('dir').textContent=CONFIG.direccion;
+q('wa').href='https://wa.me/'+CONFIG.whatsapp;
+
+paint();
+paintOp();
+iniciarNube();
+setInterval(paint,60000);
+})();
+</script>
+</body>
+</html>
