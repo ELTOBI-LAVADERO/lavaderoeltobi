@@ -854,6 +854,8 @@ async function ejecutarAccionModal(){
       +'<a class="lnk" href="'+waCancelUrl+'" target="_blank" rel="noopener">📲 Avisar cancelación por WhatsApp</a>';
     q('ok').hidden=false;
     paint();
+
+    try{window.open(waCancelUrl,'_blank','noopener')}catch(e){window.location.href=waCancelUrl}
   }catch(err){
     console.error('Error al cancelar:',err);
     q('modalErr').textContent='No se pudo cancelar en este momento. Reintentá.';
