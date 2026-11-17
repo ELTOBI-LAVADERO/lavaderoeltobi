@@ -41,9 +41,9 @@ body{margin:0;min-height:100vh;background:var(--azul-osc);background-image:linea
   .mascot-box{width:94px;height:94px;left:-8px;top:8px}
   header{padding-left:44px}
 }
-header{text-align:center;padding:8px 0 6px;width:100%}
+header{text-align:center;padding:8px 0 6px;width:100%;user-select:none}
 .logo small{display:block;font-family:var(--f-display);font-size:13px;font-weight:700;letter-spacing:6px;color:var(--txt-suave)}
-.logo b{display:block;font-family:var(--f-display);font-style:italic;font-weight:900;font-size:44px;line-height:1.05;color:var(--blanco);text-shadow:0 0 16px var(--celeste),3px 3px 0 var(--azul-prof)}
+.logo b{display:block;font-family:var(--f-display);font-style:italic;font-weight:900;font-size:44px;line-height:1.05;color:var(--blanco);text-shadow:0 0 16px var(--celeste),3px 3px 0 var(--azul-prof);cursor:pointer}
 .tag{font-size:12px;letter-spacing:2px;color:var(--celeste);margin-top:4px;font-weight:700}
 
 /* Animación de Latido (Pulse) para el 5° lavado gratis */
@@ -119,7 +119,7 @@ h2{font-family:var(--f-display);font-size:13px;letter-spacing:3px;color:var(--ce
 .opt[aria-pressed=true] small{color:var(--amarillo-txt)}
 .opt:disabled{cursor:not-allowed;background:rgba(5,41,90,.38);border:2px dashed rgba(232,38,43,.65);color:rgba(207,230,255,.55)}
 
-/* Horario ocupado: se puede tocar si es tuyo para cancelarlo */
+/* Horario ocupado: se puede tocar para cancelar con código */
 .opt.ocupado{cursor:pointer;background:rgba(5,41,90,.42);border:2px dashed rgba(232,38,43,.75);color:rgba(207,230,255,.85)}
 .opt.ocupado span{text-decoration:line-through;opacity:.75}
 .opt.ocupado small{color:#fff;font-weight:800;background:var(--rojo);border-radius:6px;display:inline-block;padding:1px 6px;margin-top:4px;font-size:10.5px;letter-spacing:.4px;text-transform:uppercase}
@@ -151,6 +151,7 @@ label.l{display:block;font-weight:700;margin:14px 0 6px}
 .aviso{font-size:13px;color:var(--txt-suave);margin-top:10px;text-align:center}
 .falta{font-size:14px;color:var(--amarillo);margin-top:10px;text-align:center;min-height:20px;font-weight:600}
 .ok{background:var(--verde);color:#06331a;border-radius:14px;padding:15px;margin-top:14px;font-weight:700}
+.ok .pin-box{background:#06331a;color:var(--amarillo);font-family:var(--f-display);font-size:24px;font-weight:900;letter-spacing:4px;text-align:center;padding:8px 12px;border-radius:10px;margin:10px 0 4px}
 .ok .lnk{display:block;margin-top:10px;background:var(--azul-prof);color:#fff;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;border:0;width:100%;font-size:15px;cursor:pointer}
 .ok .lnk-cancel{background:var(--rojo);margin-top:8px}
 .err{background:var(--rojo);color:#fff;border-radius:14px;padding:12px;margin-top:14px;font-weight:700;text-align:center}
@@ -159,21 +160,29 @@ label.l{display:block;font-weight:700;margin:14px 0 6px}
 .leyenda{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--txt-suave);margin-top:10px}
 .leyenda i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:-1px}
 
-/* Banner destacado de Mis Turnos Activos arriba */
+/* Banner de Mis Turnos y buscador rápido para cancelar */
 .mis-banner{background:var(--azul-prof);border:2px solid var(--amarillo);border-radius:16px;padding:14px;margin-top:16px}
 .mis-banner-title{font-family:var(--f-display);font-size:12px;letter-spacing:2px;color:var(--amarillo);text-transform:uppercase;font-weight:800;margin-bottom:8px}
 .turno-item{background:rgba(15,107,208,.45);border-radius:12px;padding:12px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.18)}
 .turno-item:first-of-type{margin-top:0}
 .turno-info b{color:#fff;display:block;font-size:15.5px}
 .turno-info span{font-size:13px;color:var(--txt-suave);display:block;margin-top:2px}
+.turno-pin{display:inline-block;background:var(--amarillo);color:var(--amarillo-txt);font-weight:800;font-size:12px;padding:2px 7px;border-radius:6px;margin-top:4px;letter-spacing:1px}
 .btn-cancel{background:var(--rojo);color:#fff;border:0;border-radius:10px;padding:10px 14px;font:800 13px var(--f-body);cursor:pointer;white-space:nowrap;box-shadow:0 3px 0 #9e1418}
 .btn-cancel:hover{filter:brightness(1.1)}
 
-/* Modal de confirmación / cancelación rápida */
+/* Panel secreto del dueño (5 clics en "EL TOBI") */
+.admin-bar{background:#1e1b4b;border:2px solid var(--amarillo);border-radius:16px;padding:14px;margin-top:16px;text-align:center}
+.admin-bar b{color:var(--amarillo);display:block;font-size:15px;margin-bottom:6px}
+.admin-bar button{background:var(--rojo);color:#fff;border:0;border-radius:12px;padding:12px 16px;font:800 14px var(--f-body);cursor:pointer;width:100%;margin-top:6px}
+
+/* Modal de confirmación / cancelación con código de 4 dígitos */
 .modal-bg{position:fixed;inset:0;background:rgba(3,20,46,.82);display:grid;place-items:center;padding:16px;z-index:100}
 .modal{background:var(--card);border:2px solid var(--celeste);border-radius:20px;padding:20px;max-width:400px;width:100%;box-shadow:0 16px 36px rgba(0,0,0,.5)}
 .modal h3{margin:0 0 8px;font-family:var(--f-display);font-size:18px;color:#fff}
-.modal p{margin:0 0 14px;font-size:15px;color:var(--txt-suave)}
+.modal p{margin:0 0 12px;font-size:15px;color:var(--txt-suave)}
+.modal input{text-align:center;font-family:var(--f-display);font-size:22px;font-weight:800;letter-spacing:6px}
+.modal-err{color:var(--amarillo);font-size:13.5px;margin-top:8px;font-weight:700;text-align:center}
 .modal-btns{display:flex;gap:10px;margin-top:14px}
 .modal-btns button{flex:1;padding:12px;border-radius:12px;border:0;font:700 15px var(--f-body);cursor:pointer}
 .m-no{background:var(--azul-prof);color:#fff}
@@ -240,16 +249,23 @@ footer a{color:var(--amarillo)}
     </div>
 
     <header>
-      <div class="logo"><small>LAVADERO</small><b>EL TOBI</b></div>
+      <div class="logo"><small>LAVADERO</small><b id="tituloAdmin" title="Tocá 5 veces para administrar">EL TOBI</b></div>
       <div class="tag">EL MEJOR CUIDADO PARA TU VEHÍCULO</div>
       <div class="promo">Tu 5° lavado… ¡es GRATIS!</div>
     </header>
   </div>
 
 <main>
-  <!-- Si el usuario ya tiene un turno reservado en este dispositivo, aparece acá arriba con 1 clic para cancelar -->
+  <!-- Panel secreto del dueño para borrar todas las pruebas de una vez -->
+  <div class="admin-bar" id="adminBar" hidden>
+    <b>🛠️ Modo Administrador (Lavadero El Tobi)</b>
+    <div class="sub">Turnos cargados actualmente: <span id="adminCount">0</span></div>
+    <button type="button" id="btnResetAll">🗑️ Borrar TODOS los turnos y empezar de 0</button>
+  </div>
+
+  <!-- Turnos reservados activos del cliente -->
   <div class="mis-banner" id="misBanner" hidden>
-    <div class="mis-banner-title">📅 Tu turno reservado</div>
+    <div class="mis-banner-title">📅 Tus turnos reservados</div>
     <div id="misturnos"></div>
   </div>
 
@@ -278,7 +294,7 @@ footer a{color:var(--amarillo)}
       <div id="horas"><div class="sub">Primero elegí el día para ver disponibles y ocupados.</div></div>
       <div class="leyenda" id="leyenda" hidden>
         <span><i style="background:var(--azul-prof);border:2px solid var(--celeste)"></i>Disponible</span>
-        <span><i style="border:2px dashed rgba(232,38,43,.8);background:rgba(5,41,90,.4)"></i>No disponible (Tocá si es tuyo y querés cancelar)</span>
+        <span><i style="border:2px dashed rgba(232,38,43,.8);background:rgba(5,41,90,.4)"></i>Ocupado (Tocá para cancelar)</span>
         <span><i style="background:var(--amarillo)"></i>Tu elección</span>
       </div>
     </div>
@@ -334,19 +350,19 @@ footer a{color:var(--amarillo)}
 </footer>
 </div>
 
-<!-- Modal sencillo para cancelar un turno -->
+<!-- Modal con código de 4 dígitos o últimos 4 del celular para cancelar seguro -->
 <div class="modal-bg" id="modalCancel" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
-    <h3 id="modalTitle">¿Cancelar este turno?</h3>
+    <h3 id="modalTitle">Cancelar turno</h3>
     <p id="modalDesc"></p>
-    <div id="modalVerifyBox" hidden>
-      <label class="l" for="verifyTel" style="margin-top:0">Ingresá los últimos 4 números de tu teléfono para confirmar:</label>
-      <input id="verifyTel" type="tel" inputmode="numeric" maxlength="15" placeholder="Ej: 2731">
-      <div id="verifyErr" style="color:var(--amarillo);font-size:13px;font-weight:700;margin-top:6px" hidden></div>
+    <div id="modalInputWrap">
+      <label class="l" for="cancelPin" style="margin-top:0">Ingresá tu código de 4 números o los últimos 4 de tu celular:</label>
+      <input id="cancelPin" type="tel" inputmode="numeric" maxlength="4" placeholder="Ej: 4821">
     </div>
+    <div class="modal-err" id="modalErr" hidden></div>
     <div class="modal-btns">
       <button type="button" class="m-no" id="modalNo">Volver</button>
-      <button type="button" class="m-si" id="modalSi">Sí, cancelar turno</button>
+      <button type="button" class="m-si" id="modalSi">Liberar turno</button>
     </div>
   </div>
 </div>
@@ -383,13 +399,13 @@ var DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 var CORTO=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 var VEH=[{k:'auto',n:'Auto',e:'🚗'},{k:'camioneta',n:'Camioneta',e:'🛻'},{k:'moto',n:'Moto',e:'🏍️'}];
 var st={v:null,d:null,h:null},rv={stars:0};
-var turnoACancelar=null,requiereVerif=false;
+var turnoACancelar=null;
 var STORAGE_KEY='eltobi_turnos_registrados_v1';
 var MIS_IDS_KEY='eltobi_mis_ids_v1';
 var reservas=cargarLocal();
 var misIds=cargarMisIds();
 var db=null,appId='lavadero-el-tobi',nubeActiva=false;
-var guardando=false;
+var guardando=false,toquesAdmin=0,timerAdmin=null;
 
 function cargarLocal(){
   try{
@@ -420,6 +436,7 @@ function parse(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
 function mins(t){var p=t.split(':');return +p[0]*60+ +p[1]}
 function digits(s){return String(s||'').replace(/\D/g,'')}
 function todos(){return CONFIG.turnos.manana.concat(CONFIG.turnos.tarde)}
+function generarCodigo4(){return String(Math.floor(1000+Math.random()*9000))}
 
 /* ---------- Inicialización de Almacenamiento Compartido en Tiempo Real ---------- */
 async function iniciarNube(){
@@ -509,25 +526,33 @@ function etiquetaDia(f){
 }
 function fechaLarga(f){var d=parse(f);return DIAS[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)}
 
-/* ---------- Banner superior con tus turnos reservados ---------- */
+/* ---------- Banner superior con los turnos reservados del cliente ---------- */
 function renderMisTurnos(){
   var banner=q('misBanner');
   var cont=q('misturnos');
-  var propios=reservas.filter(function(r){return misIds.indexOf(r.id)>=0});
-  if(!propios.length){
+  q('adminCount').textContent=reservas.length;
+
+  var esAdmin=!q('adminBar').hidden;
+  var listaMostrar=esAdmin
+    ? reservas
+    : reservas.filter(function(r){return misIds.indexOf(r.id)>=0});
+
+  if(!listaMostrar.length){
     banner.hidden=true;
     return;
   }
   banner.hidden=false;
-  var ordenados=propios.slice().sort(function(a,b){return (a.fecha+a.hora).localeCompare(b.fecha+b.hora)});
+  var ordenados=listaMostrar.slice().sort(function(a,b){return (a.fecha+a.hora).localeCompare(b.fecha+b.hora)});
   cont.innerHTML=ordenados.map(function(r){
     var vObj=VEH.filter(function(x){return x.k===r.vehiculo})[0]||{n:'Vehículo',e:'🚗'};
+    var pinTexto=r.codigoCancelacion?'Código: '+esc(r.codigoCancelacion):'Últ. 4 tel: '+esc(digits(r.telefono).slice(-4));
     return '<div class="turno-item">'
       +'<div class="turno-info">'
       +'<b>'+vObj.e+' '+esc(fechaLarga(r.fecha))+' · '+esc(r.hora)+' hs</b>'
       +'<span>'+esc(r.nombre)+' · '+vObj.n+(r.patente?' ('+esc(r.patente)+')':'')+'</span>'
+      +'<span class="turno-pin">'+pinTexto+'</span>'
       +'</div>'
-      +'<button type="button" class="btn-cancel" data-cancel-id="'+esc(r.id)+'">Cancelar turno</button>'
+      +'<button type="button" class="btn-cancel" data-cancel-id="'+esc(r.id)+'">Cancelar</button>'
       +'</div>';
   }).join('');
 }
@@ -558,9 +583,9 @@ function paint(){
       return a.length?'<div class="franja">'+titulo+'</div><div class="grid3">'+a.map(function(t){
         var oc=ocupado(st.d,t);
         if(oc){
-          return '<button type="button" class="opt ocupado" data-occ-h="'+t+'" aria-label="'+t+', no disponible">'
+          return '<button type="button" class="opt ocupado" data-occ-h="'+t+'" aria-label="'+t+', ocupado, tocar para cancelar">'
             +'<span>'+t+'</span>'
-            +'<small>No disponible</small>'
+            +'<small>Ocupado · Cancelar</small>'
             +'</button>';
         }
         return '<button type="button" class="opt libre" data-h="'+t+'" aria-pressed="'+(st.h===t)+'">'
@@ -573,7 +598,7 @@ function paint(){
     q('leyenda').hidden=false;
   }
 
-  q('aviso').textContent='Tu turno queda reservado al instante y se envía aviso automático al WhatsApp del lavadero.';
+  q('aviso').textContent='Tu turno queda reservado al instante con un código de 4 números por si necesitás cancelarlo.';
 
   var nom=q('nom').value.trim(),tel=digits(q('tel').value),falta=[];
   if(!st.v)falta.push('el vehículo');
@@ -593,7 +618,7 @@ function paint(){
   renderMisTurnos();
 }
 
-/* ---------- Reserva Automática con Transacción ---------- */
+/* ---------- Reserva Automática con Código Sencillo de 4 Dígitos ---------- */
 async function confirmarReservaAutomatica(){
   q('err').hidden=true;
   if(q('web').value||guardando)return;
@@ -616,8 +641,10 @@ async function confirmarReservaAutomatica(){
   paint();
 
   var slotKey=st.d+'_'+st.h.replace(':','');
+  var codigo4=generarCodigo4();
   var nuevoTurno={
     id:'T-'+Date.now().toString(36).toUpperCase(),
+    codigoCancelacion:codigo4,
     slotKey:slotKey,
     fecha:st.d,
     hora:st.h,
@@ -649,7 +676,7 @@ async function confirmarReservaAutomatica(){
 
     var vObj=VEH.filter(function(x){return x.k===nuevoTurno.vehiculo})[0];
     var precioStr=fm(CONFIG.precios[nuevoTurno.vehiculo]);
-    var textoAviso='✅ *NUEVO TURNO RESERVADO (AUTOMÁTICO)*\n'
+    var textoAviso='✅ *NUEVO TURNO RESERVADO*\n'
       +'Lavadero El Tobi\n\n'
       +'👤 *Cliente:* '+nuevoTurno.nombre+'\n'
       +'📱 *WhatsApp cliente:* '+nuevoTurno.telefono+'\n'
@@ -657,14 +684,15 @@ async function confirmarReservaAutomatica(){
       +'📅 *Día:* '+fechaLarga(nuevoTurno.fecha)+'\n'
       +'⏰ *Hora:* '+nuevoTurno.hora+' hs\n'
       +'💰 *Valor:* '+precioStr+'\n'
-      +'🆔 *Código:* '+nuevoTurno.id;
+      +'🔑 *Código para cancelar:* '+nuevoTurno.codigoCancelacion;
 
     var waUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(textoAviso);
 
-    q('ok').innerHTML='✅ <b>¡Turno confirmado automáticamente!</b><br>'
+    q('ok').innerHTML='✅ <b>¡Turno confirmado!</b><br>'
       +'<span style="font-weight:500">'+esc(nuevoTurno.nombre)+' · '+vObj.n+' · '+fechaLarga(nuevoTurno.fecha)+' a las '+nuevoTurno.hora+' hs.<br>'
-      +'Te esperamos en '+esc(CONFIG.direccion)+'.</span>'
-      +'<a class="lnk" href="'+waUrl+'" target="_blank" rel="noopener">📲 Enviar comprobante por WhatsApp al lavadero</a>'
+      +'Guardá tu código de 4 números por si necesitás cancelar:</span>'
+      +'<div class="pin-box">'+esc(nuevoTurno.codigoCancelacion)+'</div>'
+      +'<a class="lnk" href="'+waUrl+'" target="_blank" rel="noopener">📲 Guardar comprobante en WhatsApp</a>'
       +'<button type="button" class="lnk lnk-cancel" data-cancel-id="'+esc(nuevoTurno.id)+'">❌ Cancelar este turno</button>';
     q('ok').hidden=false;
 
@@ -693,40 +721,39 @@ async function confirmarReservaAutomatica(){
   }
 }
 
-/* ---------- Cancelación Rápida ---------- */
-function abrirModalCancelacion(id, desdeHorarioOcupado){
+/* ---------- Cancelación Segura con Código de 4 Dígitos o Últimos 4 del Celular ---------- */
+function abrirModalCancelacion(id){
   var t=reservas.filter(function(r){return r.id===id})[0];
   if(!t)return;
   turnoACancelar=t;
-  var esMioEnEsteCel=misIds.indexOf(t.id)>=0;
-  requiereVerif=!!desdeHorarioOcupado && !esMioEnEsteCel;
-
   var vObj=VEH.filter(function(x){return x.k===t.vehiculo})[0]||{n:'Vehículo'};
-  q('verifyErr').hidden=true;
-  q('verifyTel').value='';
+  var esAdmin=!q('adminBar').hidden;
 
-  if(requiereVerif){
-    q('modalTitle').textContent='Horario ocupado ('+t.hora+' hs)';
-    q('modalDesc').innerHTML='Este turno del <b>'+esc(fechaLarga(t.fecha))+'</b> está reservado a nombre de <b>'+esc(t.nombre)+'</b>.<br><br>Si es tu turno y querés cancelarlo, ingresá los últimos 4 números de tu teléfono:';
-    q('modalVerifyBox').hidden=false;
-  }else{
-    q('modalTitle').textContent='¿Cancelar este turno?';
-    q('modalDesc').innerHTML='Vas a cancelar tu turno ('+vObj.n+') del <b>'+esc(fechaLarga(t.fecha))+' a las '+esc(t.hora)+' hs</b>.<br><br>El horario volverá a quedar <b>Disponible</b> al instante.';
-    q('modalVerifyBox').hidden=true;
-  }
+  q('modalTitle').textContent='Cancelar turno';
+  q('modalDesc').innerHTML='Turno de <b>'+esc(t.nombre)+'</b> ('+vObj.n+') el <b>'+esc(fechaLarga(t.fecha))+' a las '+esc(t.hora)+' hs</b>.';
+  q('cancelPin').value='';
+  q('modalErr').hidden=true;
+  q('modalInputWrap').hidden=esAdmin;
   q('modalCancel').hidden=false;
+  if(!esAdmin){
+    setTimeout(function(){q('cancelPin').focus()},60);
+  }
 }
 
 async function ejecutarCancelacion(){
   if(!turnoACancelar)return;
   var t=turnoACancelar;
+  var esAdmin=!q('adminBar').hidden;
 
-  if(requiereVerif){
-    var ing=digits(q('verifyTel').value);
-    var telReal=digits(t.telefono);
-    if(ing.length<4 || telReal.slice(-4)!==ing.slice(-4)){
-      q('verifyErr').textContent='Esos últimos 4 números no coinciden con la reserva.';
-      q('verifyErr').hidden=false;
+  if(!esAdmin){
+    var pinIngresado=digits(q('cancelPin').value);
+    var ult4Tel=digits(t.telefono).slice(-4);
+    var codTurno=digits(t.codigoCancelacion);
+    var coincide=(pinIngresado.length===4)&&(pinIngresado===codTurno||pinIngresado===ult4Tel);
+
+    if(!coincide){
+      q('modalErr').textContent='Código incorrecto. Ingresá tu código de 4 números o los últimos 4 de tu celular.';
+      q('modalErr').hidden=false;
       return;
     }
   }
@@ -751,8 +778,7 @@ async function ejecutarCancelacion(){
       +'📱 *Teléfono:* '+t.telefono+'\n'
       +'🚘 *Vehículo:* '+vObj.n+'\n'
       +'📅 *Día liberado:* '+fechaLarga(t.fecha)+'\n'
-      +'⏰ *Hora liberada:* '+t.hora+' hs\n'
-      +'🆔 *Código:* '+t.id;
+      +'⏰ *Hora liberada:* '+t.hora+' hs';
 
     var waCancelUrl='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(msgCancel);
 
@@ -762,10 +788,6 @@ async function ejecutarCancelacion(){
     q('ok').hidden=false;
 
     paint();
-
-    try{
-      window.open(waCancelUrl,'_blank','noopener');
-    }catch(e){}
   }catch(err){
     console.error('Error al cancelar:',err);
     q('err').textContent='No se pudo cancelar el turno en este momento. Intentá de nuevo.';
@@ -773,10 +795,55 @@ async function ejecutarCancelacion(){
   }
 }
 
+/* ---------- Vaciar todos los turnos de prueba (Modo Admin) ---------- */
+async function borrarTodosLosTurnos(){
+  var btn=q('btnResetAll');
+  btn.disabled=true;
+  btn.textContent='Borrando turnos…';
+  try{
+    if(db){
+      for(var i=0;i<reservas.length;i++){
+        var r=reservas[i];
+        var docKey=r.docId||r.slotKey||(r.fecha+'_'+r.hora.replace(':',''));
+        await deleteDoc(doc(db,'artifacts',appId,'public','data','turnos_eltobi',docKey));
+      }
+    }
+    reservas=[];
+    misIds=[];
+    guardarLocal();
+    guardarMisIds();
+    q('ok').innerHTML='✨ <b>¡Listo! Todos los turnos quedaron libres en cero.</b><br><span style="font-weight:500">Ya podés lanzar la página al público.</span>';
+    q('ok').hidden=false;
+    paint();
+  }catch(err){
+    console.error(err);
+    q('err').textContent='Hubo un error al vaciar la agenda.';
+    q('err').hidden=false;
+  }finally{
+    btn.disabled=false;
+    btn.textContent='🗑️ Borrar TODOS los turnos y empezar de 0';
+  }
+}
+
 /* ---------- Eventos ---------- */
+q('tituloAdmin').addEventListener('click',function(){
+  toquesAdmin++;
+  clearTimeout(timerAdmin);
+  timerAdmin=setTimeout(function(){toquesAdmin=0},2000);
+  if(toquesAdmin>=5){
+    toquesAdmin=0;
+    q('adminBar').hidden=!q('adminBar').hidden;
+    paint();
+  }
+});
+
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;
 
+  if(b.id==='btnResetAll'){
+    borrarTodosLosTurnos();
+    return;
+  }
   if(b.id==='opbtn'){var f=q('opform');f.hidden=!f.hidden;b.textContent=f.hidden?'⭐ Dejar mi opinión':'Cerrar';return}
   if(b.dataset.star){rv.stars=+b.dataset.star;paintOp();return}
   if(b.id==='opgo'){
@@ -792,7 +859,7 @@ document.addEventListener('click',function(e){
   if(b.dataset.h){st.h=b.dataset.h;paint();return}
   if(b.dataset.occH){
     var tOcc=turnoEn(st.d,b.dataset.occH);
-    if(tOcc)abrirModalCancelacion(tOcc.id,true);
+    if(tOcc)abrirModalCancelacion(tOcc.id);
     return;
   }
   if(b.id==='go'){
@@ -801,7 +868,7 @@ document.addEventListener('click',function(e){
     return;
   }
   if(b.dataset.cancelId){
-    abrirModalCancelacion(b.dataset.cancelId,false);
+    abrirModalCancelacion(b.dataset.cancelId);
     return;
   }
   if(b.id==='modalNo'){
